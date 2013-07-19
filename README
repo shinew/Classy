@@ -1,2 +1,3 @@
 Have you ever felt that manually checking whether your courses conflict is too slow, error-prone, and tedious? Remember the time when you had to add a course, and your entire schedule falls apart? I sure have.
 This software will help UWaterloo students select and optimize course selections.
+This project will be written in Python (for now).

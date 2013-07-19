@@ -1,11 +1,11 @@
 import urllib
 from HTMLParser import HTMLParser
 
-a = []
+allData = []
 class MyHTMLParser(HTMLParser):
 	def handle_data(self, data):
 		if len(data.strip()) != 0:
-			a.append(data.strip())
+			allData.append(data.strip())
 
 params = urllib.urlencode({'sess' : '1139', 'subject' : 'AFM'})
 #params = urllib.urlencode({'sess' : '2320', 'subject' : 'AFM'})

@@ -4,10 +4,10 @@ from HTMLParser import HTMLParser
 from CourseClasses import * # all important classes
 
 class Parser(HTMLParser):
-	# this class parses the form
-	# TODO: Add allData to this class, along with the following code
-	def handle_data(self, data):
-		allData.append(data.strip())
+    # this class parses the form
+    # TODO: Add allData to this class, along with the following code
+    def handle_data(self, data):
+        allData.append(data.strip())
 
 # some "global" variables
 queryString = " afm 101"
@@ -34,9 +34,9 @@ myParser.feed(stream.read())
 
 index = -1
 for i in xrange(len(allData)-1):
-	if allData[i] == tmp.subject and allData[i+1] == tmp.catalogNumber:
-		index = i
-		break
+    if allData[i] == tmp.subject and allData[i+1] == tmp.catalogNumber:
+        index = i
+        break
 
 # TODO: deal with index == -1 (course not found)
 
@@ -44,29 +44,29 @@ for i in xrange(len(allData)-1):
 # not quite sure what that does, but regex should pick it up
 
 def isEnd(data):
-	if re.search(r'\d+/\d+-\d+/\d+', data):
-		return True
-	else:
-		return False
+    if re.search(r'\d+/\d+-\d+/\d+', data):
+        return True
+    else:
+        return False
 
 tmp.units = allData[index+2]
 tmp.title = allData[index+3]
 while allData[index] != "Instructor":
-	index += 1
+    index += 1
 index += 1
 
 while isEnd(allData[index]) == False:
-	if allData[index] == "":
-		index += 1
-		continue
+    if allData[index] == "":
+        index += 1
+        continue
 
-	index = tmp.processSlot(index, allData)
-	index += 1
+    index = tmp.processSlot(index, allData)
+    index += 1
 
 #for i in tmp.lectures:
-#	print repr(i)
-#	for j in i.reserves:
-#		print repr(j)
+#   print repr(i)
+#   for j in i.reserves:
+#       print repr(j)
 #
 #for i in tmp.tutorials:
-#	print repr(i)
+#   print repr(i)

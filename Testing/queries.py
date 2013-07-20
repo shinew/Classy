@@ -62,3 +62,11 @@ while isEnd(allData[index]) == False:
 
 	index = tmp.processSlot(index, allData)
 	index += 1
+
+#for i in tmp.lectures:
+#	print repr(i)
+#	for j in i.reserves:
+#		print repr(j)
+#
+#for i in tmp.tutorials:
+#	print repr(i)

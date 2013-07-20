@@ -18,6 +18,10 @@ class Slot:
 	room = ""
 	instructor = ""
 
+	def __repr__(self):
+		attrs = ["classNumber", "compSec", "campusLocation", "enrlCap", "enrlTotal", "waitCap", "waitTotal", "days", "startTime", "endTime", "building", "room", "instructor"]
+		return "*".join(map(str, [getattr(self, x) for x in attrs]))
+
 	def process(self, index, allData):
 		# heavy-duty processing of the data array
 		attr1 = ["classNumber", "compSec", "campusLocation"]
@@ -30,7 +34,7 @@ class Slot:
 			setattr(self, attr2[i], int(allData[index+i]))
 		index += 4
 
-		#parsing the "Times Days/Date" field
+		# parsing the "Times Days/Date" field
 		match = re.search(r'([:\d]+)-([:\d]+)(\w+)', allData[index])
 		attr3 = ["startTime", "endTime", "days"]
 		for i in xrange(len(attr3)):
@@ -39,7 +43,6 @@ class Slot:
 
 		self.building, self.room = allData[index].split()
 		self.instructor = allData[index+1]
-		index += 2
 
 		return index
 
@@ -49,9 +52,28 @@ class Reserve:
 	enrlTotal = 0
 
 	def __init__(self, index, allData):
-		reserveText = allData
+		# warning: we merge the next 4 cells together, because the text is split between them
+		reserveText = "".join(allData[index:index+3])
+		#print reserveText
+
+		# we leave out the first match, because it is the word "reserve"
+		self.names = map(lambda x: x.strip(), re.findall(r'[\w\d\s\-\/]+', reserveText)[1:])
+
+		# we remove the "only" suffix
+		if "only" in self.names[-1]:
+			self.names[-1] = self.names[:-5]
+
+		# now, we merge the match list
+		while not allData[index].isdigit():
+			index += 1
+		self.enrlCap = int(allData[index])
+		self.enrlTot = int(allData[index+1])
+		index += 4
+
 		pass
 
+	def __repr__(self):
+		return "*".join(self.names) + "*" + str(self.enrlCap) + "*" + str(self.enrlTotal)
 
 class Lecture(Slot):
 	reserves = []
@@ -59,7 +81,6 @@ class Lecture(Slot):
 
 class Tutorial(Slot):
 	pass
-
 
 class Course:
 	subject = ""
@@ -75,15 +96,18 @@ class Course:
 	
 	def processSlot(self, index, allData):
 		if allData[index+1][:3].upper() == 'LEC':
-			# print "Lecture!"
+			# processing a lecture row
 			lec = Lecture()
 			index = lec.process(index, allData)
 			self.lectures.append(lec)
-			import pdb; pdb.set_trace()
 		elif allData[index+1][:3].upper() == 'TUT':
-			# print "Tutorial!"
-			pass
+			# processing a tutorial row
+			tut = Tutorial()
+			index = tut.process(index, allData)
+			self.tutorials.append(tut)
 		elif allData[index][:7].upper() == 'RESERVE':
+			# processing a reserve row
 			res = Reserve(index, allData)
-			lectures[-1].reserves.append(res)
+			self.lectures[-1].reserves.append(res)
+		# note: we leave out the TST (exam?) times for now
 		return index

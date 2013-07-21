@@ -1,12 +1,22 @@
 from webParser import WebParser
 from matcher2 import Matcher
 
-mysession = "    fall 2013     "
-mycourses = ["math 135", "math 137", "cs 145", "afm 101", "econ 101"]
+
+sessionString = "fall 2013"
+userCourses = ["math 135", "math 137", "cs 145", "afm 101", "econ 101"]
+
 courses = []
-for i in mycourses:
-    tmp = WebParser(i, mysession).run()
+for courseName in userCourses:
+    tmp = WebParser(courseName, sessionString).run()
     courses.append(tmp)
 
-mat = Matcher(courses)
-a = mat.matching()
+match = Matcher(courses)
+generator = match.matching()
+
+for schedule in generator:
+    for slot in schedule:
+        print slot
+    print
+    inp = raw_input("enter q to quit; enter n to continue: ")
+    if inp.lower() == 'q':
+        break

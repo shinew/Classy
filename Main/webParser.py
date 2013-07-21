@@ -229,5 +229,8 @@ class WebParser:
             # "last,first middle"
 
             if slot.instructor != "":
-                slot.instructor = " ".join(list(reversed(
-                    slot.instructor.split()[0].split(","))))
+                s = slot.instructor.split(" ")
+                for i in s:
+                    if "," in i:
+                        # we want the 2 words connected by the ","
+                        slot.instructor = " ".join(reversed(list(i.split(","))))

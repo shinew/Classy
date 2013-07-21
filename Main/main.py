@@ -1,5 +1,5 @@
 from webParser import WebParser
-from matcher2 import Matcher
+from matcher import Matcher
 
 
 sessionString = "fall 2013"

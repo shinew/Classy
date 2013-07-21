@@ -11,10 +11,6 @@ class CustomHTMLParser(HTMLParser):
         HTMLParser.__init__(self)
         self.webData = webData
 
-    def customInit(self, webData):
-        """internalizes the webData attribute from the WebParser"""
-        self.webData = webData
-
     def handle_data(self, data):
         """takes out the data"""
         self.webData.append(data.strip())
@@ -24,12 +20,12 @@ class WebParser:
     """"A WebParser is created for each and every course,
     to parse the corresponding web page"""
 
-    requestURL = "http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl"
+    requestURL = "http://www.adm.uwaterloo.ca/cgi-bin/" \
+                 "cgiwrap/infocour/salook.pl"
 
     def __init__(self, courseString, sessionString):
         self.webData = []
         self.index = -1
-        self.thisCourse = None
         # I chose to allow the Course class to parse the input string
         # for modularity
         self.session = self.parseSession(sessionString)
@@ -42,7 +38,7 @@ class WebParser:
 
         if self.session is None:
             return "SessionError"
-        elif self.getWebData():
+        elif self.getWebData(self.thisCourse):
             return "WebPageError"
         elif self.parseWebData():
             return "CourseNotFoundError"
@@ -53,7 +49,7 @@ class WebParser:
 
     def parseSession(self, sessionString):
         ret = "1"
-        ret += sessionString.split()[1][-2:] # last 2 digits of the year
+        ret += sessionString.split()[1][-2:]  # last 2 digits of the year
         tempMap = (("fall", "9"), ("winter", "1"), ("spring", "5"))
         for season in tempMap:
             if season[0] in sessionString.lower():
@@ -61,12 +57,14 @@ class WebParser:
                 return ret
         return None
 
-    def getWebData(self):
+    def getWebData(self, course):
         """submits a POST query, initializes HTMLParser"""
 
         try:
-            params = urllib.urlencode({"sess" : self.thisCourse.session,
-                "subject" : self.thisCourse.subject, "cournum" : self.thisCourse.catalogNumber})
+            #import pdb; pdb.set_trace()
+            params = urllib.urlencode({"sess": course.session,
+                                       "subject": course.subject,
+                                       "cournum": course.catalogNumber})
             page = urllib.urlopen(WebParser.requestURL, params)
             parser = CustomHTMLParser(self.webData)
 
@@ -86,9 +84,8 @@ class WebParser:
                     and self.webData[i+2] == self.thisCourse.catalogNumber:
                         self.index = i
                         break
-        if self.index == -1: # website not found
+        if self.index == -1:  # website not found
             return "CourseNotFound"
-
 
     def processCourseInfo(self):
         """now, we do the heavy-duty processing of the data table"""
@@ -100,7 +97,7 @@ class WebParser:
             self.index += 1
 
         # processing row-by-row
-        while self.endOfRow(self.webData[self.index]) == False:
+        while not self.endOfRow(self.webData[self.index]):
             if self.webData[self.index] != "":
                 self.processSlot()
             self.index += 1
@@ -133,8 +130,8 @@ class WebParser:
         reserveText = "".join(webData[index:index+3])
 
         # we leave out the first match, because it is the word "reserve"
-        res.names = map(lambda x: x.strip(),
-                re.findall(r"[\w\d\s\-\/]+", reserveText)[1:])
+        res.names = map(lambda x: x.strip(), re.findall(r"[\w\d\s\-\/]+",
+                        reserveText)[1:])
 
         # we remove the "only" suffix (which is annoyingly pointless)
         if "only" in res.names[-1]:
@@ -196,24 +193,31 @@ class WebParser:
             # earliest start time for a class is 8:30am
             # night classes start at/before 7:00pm
             if 1 <= int(slot.startTime.split(":")[0]) <= 7:
-                slot.startTime, slot.endTime = map(lambda x: "{}:{}".format\
-                        (str(int(x.split(":")[0])+12), x[-2:]), [slot.startTime, slot.endTime])
-            elif int(slot.startTime.split(":")[0]) > int(slot.endTime.split(":")[0]):
+                slot.startTime, slot.endTime = \
+                    map(lambda x: "{}:{}".format(str(int(x.split(":")[0])
+                        + 12), x[-2:]), [slot.startTime,
+                        slot.endTime])
+
+            elif int(slot.startTime.split(":")[0]) > int(
+                    slot.endTime.split(":")[0]):
                 # e.g. 12:00 to 1:00
-                slot.endTime = "{}:{}".format(str(int(slot.endTime.split(":")[0])+12), slot.endTime[-2:])
+                slot.endTime = "{}:{}".format(str(int(
+                    slot.endTime.split(":")[0])+12), slot.endTime[-2:])
 
-            # now, we write to slot.sTime, slot.eTime (minutes-past-midnight...)
-            slot.sTime, slot.eTime = map(lambda x: int(x[:2])*60+int(x[-2:]),
-                    [slot.startTime, slot.endTime])
+            # now, we write to slot.sTime, slot.eTime
+            # (minutes-past-midnight...)
+            slot.sTime, slot.eTime = map(lambda x: int(x[:2]) * 60 +
+                                         int(x[-2:]),
+                                         [slot.startTime, slot.endTime])
 
-
-            # we write to slot.ndays, where ndays is a string of numbers, 0->4
-
+            # we write to slot.ndays, where ndays is a string of numbers,
+            # 0->4
             if "M" in slot.days:
                 slot.ndays += "0"
 
             i = slot.days.find("T")
-            if i != -1  and (i == len(slot.days) - 1 or slot.days[i+1] != 'h'):
+            if i != -1 and (i == len(slot.days) - 1 or
+                            slot.days[i+1] != 'h'):
                 # basically, if not Th (for Thursday)
                 slot.ndays += "1"
 
@@ -222,7 +226,8 @@ class WebParser:
                 if i[0] in slot.days:
                     slot.ndays += i[1]
 
-            # we make a small adjustment to campusLocation, removing whitespace
+            # we make a small adjustment to campusLocation,
+            # removing whitespace
             slot.campusLocation = slot.campusLocation.split()[0]
 
             # we make the prof name "first last" instead of
@@ -233,4 +238,5 @@ class WebParser:
                 for i in s:
                     if "," in i:
                         # we want the 2 words connected by the ","
-                        slot.instructor = " ".join(reversed(list(i.split(","))))
+                        slot.instructor = " ".join(reversed(list(
+                            i.split(","))))

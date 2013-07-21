@@ -1,6 +1,7 @@
 from webParser import WebParser
 from courseClasses import Course
 
+
 class Matcher:
     """This class will process the courses given, and (most likely) find
     an optimal schedule"""
@@ -23,20 +24,20 @@ class Matcher:
         """recursively finds the slots
         stop when it returns None"""
         return self.matchingTutorial(0)
-    
+
     def matchingTutorial(self, index):
         """we want more variety in lectures, not tutorials,
         so we process tutorials first"""
         if index == self.numCourses:
             for y in self.matchingLecture(0):
                 yield y
-        else: 
+        else:
             if len(self.courses[index].tutorials) == 0:
                 self.tutIndices[index] = -1
                 for y in self.matchingTutorial(index+1):
                     yield y
             else:
-                for i,tut in enumerate(self.courses[index].tutorials):
+                for i, tut in enumerate(self.courses[index].tutorials):
                     times = self.notOccupied(tut)
                     if times:
                         self.tutIndices[index] = i
@@ -50,13 +51,13 @@ class Matcher:
         """very similar to tutorials - base case is 'return slots'"""
         if index == self.numCourses:
             yield self.getSlots()
-        else: 
+        else:
             if len(self.courses[index].lectures) == 0:
                 self.lecIndices[index] = -1
                 for y in self.matchingLecture(index+1):
                     yield y
             else:
-                for i,lec in enumerate(self.courses[index].lectures):
+                for i, lec in enumerate(self.courses[index].lectures):
                     times = self.notOccupied(lec)
                     if times:
                         self.lecIndices[index] = i
@@ -70,8 +71,8 @@ class Matcher:
         """checks to see if the times are occupied already"""
         times = []
         for d in slot.ndays:
-            times.append( (slot.sTime + 24*60*int(d),
-                    slot.eTime + 24*60*int(d))   )
+            times.append((slot.sTime + 24*60*int(d),
+                         slot.eTime + 24*60*int(d)))
 
         for t in times:
             for j in self.timesOccupied:
@@ -83,12 +84,10 @@ class Matcher:
     def getSlots(self):
         """returns the slots"""
         ret = []
-        for i,e in enumerate(self.lecIndices):
+        for i, e in enumerate(self.lecIndices):
             if e != -1:
                 ret.append(self.courses[i].lectures[e])
-            else:
-                import pdb; pdb.set_trace()
-        for i,e in enumerate(self.tutIndices):
+        for i, e in enumerate(self.tutIndices):
             if e != -1:
                 ret.append(self.courses[i].tutorials[e])
         return ret

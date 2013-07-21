@@ -13,8 +13,8 @@ class Slot(object):
         self.enrlTotal = 0
         self.waitCap = 0
         self.waitTotal = 0
-        self.days = "" # e.g. "MWF"
-        self.sTime = 0 # minutes past midnight (00:00)
+        self.days = ""  # e.g. "MWF"
+        self.sTime = 0  # minutes past midnight (00:00)
         self.eTime = 0
         self.ndays = ""
         self.startTime = ""
@@ -26,21 +26,23 @@ class Slot(object):
     def __repr__(self):
         # TODO: improve the formatting
         attrs = ["classNumber", "compSec", "campusLocation", "enrlCap",
-                "enrlTotal", "waitCap", "waitTotal", "days",
-                "startTime", "endTime", "building", "room", "instructor"]
+                 "enrlTotal", "waitCap", "waitTotal", "days",
+                 "startTime", "endTime", "building", "room", "instructor"]
         return "*".join(map(str, [getattr(self, x) for x in attrs]))
+
 
 class Reserve:
     """A "reservation" made for certain types of students"""
 
     def __init__(self):
-        self.names = [] # e.g. "AFM", "Math CA", etc.
+        self.names = []  # e.g. "AFM", "Math CA", etc.
         self.enrlCap = 0
         self.enrlTotal = 0
 
     def __repr__(self):
         return "*".join(self.names) + "*" + str(self.enrlCap) + \
-                "*" + str(self.enrlTotal)
+               "*" + str(self.enrlTotal)
+
 
 class Lecture(Slot):
     """One "lecture" slot"""
@@ -53,6 +55,7 @@ class Tutorial(Slot):
     """One "tutorial" slot"""
     pass
 
+
 class Course:
     """represents a "course" e.g. AFM 101, ECON 101"""
 
@@ -60,8 +63,8 @@ class Course:
         """processing the queryString e.g. 'afm 101' """
 
         self.session = session.strip()
-        self.subject = queryString.split()[0].upper() #e.g. AFM
-        self.catalogNumber = queryString.split()[1] #e.g. 101
+        self.subject = queryString.split()[0].upper()  # e.g. AFM
+        self.catalogNumber = queryString.split()[1]  # e.g. 101
         self.units = ""
         self.title = ""
         self.lectures = []

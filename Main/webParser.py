@@ -7,7 +7,9 @@ from courseClasses import Course, Lecture, Tutorial, Reserve
 class CustomHTMLParser(HTMLParser):
     """this class reads a HTML stream, then parses out the "data" fields"""
 
-    webData = []
+    def __init__(self, webData):
+        HTMLParser.__init__(self)
+        self.webData = webData
 
     def customInit(self, webData):
         """internalizes the webData attribute from the WebParser"""
@@ -22,13 +24,12 @@ class WebParser:
     """"A WebParser is created for each and every course,
     to parse the corresponding web page"""
 
-    courseString = "" # e.g. " afm 101 "
     requestURL = "http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl"
-    webData = []
-    index = -1
-    thisCourse = None
 
     def __init__(self, courseString, session="1139"):
+        self.webData = []
+        self.index = -1
+        self.thisCourse = None
         self.courseString = courseString
         # I chose to allow the Course class to parse the input string
         # for modularity
@@ -55,8 +56,7 @@ class WebParser:
             params = urllib.urlencode({"sess" : self.thisCourse.session,
                 "subject" : self.thisCourse.subject})
             page = urllib.urlopen(self.requestURL, params)
-            parser = CustomHTMLParser()
-            parser.customInit(self.webData)
+            parser = CustomHTMLParser(self.webData)
 
             # we use .replace() because HTMLParser ignores "&nbsp",
             # which would screwn up our table

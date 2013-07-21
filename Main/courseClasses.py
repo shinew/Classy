@@ -1,25 +1,27 @@
-class Slot:
+class Slot(object):
     """the basic template containing fundamental attributes of a
     university class. It is named "Slot" to avoid confusing it
     with classes"""
-    classNumber = ""
-    compSec = ""    # short for "Component Section" (e.g. LEC 001)
-    campusLocation = ""
-    # assocClass, Rel1, Rel2 are left out for now (not very useful)
-    enrlCap = 0
-    enrlTotal = 0
-    waitCap = 0
-    waitTotal = 0
-    days = "" # e.g. "MWF"
-    sTime = 0 # minutes past midnight (00:00)
-    eTime = 0
-    ndays = ""
 
-    startTime = ""
-    endTime = ""
-    building = ""
-    room = ""
-    instructor = ""
+    def __init__(self):
+        self.classNumber = ""
+        self.compSec = ""    # short for "Component Section" (e.g. LEC 001)
+        self.campusLocation = ""
+
+        # assocClass, Rel1, Rel2 are left out for now (not very useful)
+        self.enrlCap = 0
+        self.enrlTotal = 0
+        self.waitCap = 0
+        self.waitTotal = 0
+        self.days = "" # e.g. "MWF"
+        self.sTime = 0 # minutes past midnight (00:00)
+        self.eTime = 0
+        self.ndays = ""
+        self.startTime = ""
+        self.endTime = ""
+        self.building = ""
+        self.room = ""
+        self.instructor = ""
 
     def __repr__(self):
         # TODO: improve the formatting
@@ -31,9 +33,10 @@ class Slot:
 class Reserve:
     """A "reservation" made for certain types of students"""
 
-    names = [] # e.g. "AFM", "Math CA", etc.
-    enrlCap = 0
-    enrlTotal = 0
+    def __init__(self):
+        self.names = [] # e.g. "AFM", "Math CA", etc.
+        self.enrlCap = 0
+        self.enrlTotal = 0
 
     def __repr__(self):
         return "*".join(self.names) + "*" + str(self.enrlCap) + \
@@ -41,7 +44,9 @@ class Reserve:
 
 class Lecture(Slot):
     """One "lecture" slot"""
-    reserves = []
+    def __init__(self):
+        super(Lecture, self).__init__()
+        self.reserves = []
 
 
 class Tutorial(Slot):
@@ -51,16 +56,13 @@ class Tutorial(Slot):
 class Course:
     """represents a "course" e.g. AFM 101, ECON 101"""
 
-    session = ""
-    subject = ""
-    catalogNumber = ""
-    units = ""
-    title = ""
-    lectures = []
-    tutorials = []
-
     def __init__(self, session, queryString):
         """processing the queryString e.g. 'afm 101' """
+
         self.session = session.strip()
         self.subject = queryString.split()[0].upper()
         self.catalogNumber = queryString.split()[1]
+        self.units = ""
+        self.title = ""
+        self.lectures = []
+        self.tutorials = []

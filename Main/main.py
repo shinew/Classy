@@ -1,4 +1,4 @@
-from webparser import CustomHTMLParser, WebParser
+from webParser import WebParser
 
-tmp = WebParser("afm 101")
-tmp.run()
+tmp = WebParser("adsfyoafm 101")
+tmp = tmp.run()

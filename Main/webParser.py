@@ -34,9 +34,9 @@ class WebParser:
         self.getWebData()
         self.parseWebData()
         if self.index == -1:
-            return "website not found" # error 1 found
+            return # error 1 found
         else:
-            return 0 # successfully completed
+            return self.thisCourse # successfully completed
 
     def getWebData(self):
         # submitting POST form, initializing HTMLParser
@@ -108,12 +108,15 @@ class WebParser:
         if "only" in res.names[-1]:
             res.names[-1] = res.names[:-5]
 
+        # in case we took the enrollment numbers after it, we remove number-suffixes (e.g. "1A students1200")
+        while res.names[-1][-1].isdigit():
+            res.names[-1] = res.names[-1][:-1]
+
         # now, we merge the match list
         while not webData[index].isdigit():
             index += 1
         res.enrlCap = int(webData[index])
         res.enrlTotal = int(webData[index+1])
-        pdb.set_trace()
 
     def processClass(self, lec, index, webData):
         # note that lec can be a tutorial as well

@@ -1,4 +1,4 @@
 from webParser import WebParser
 
-tmp = WebParser("adsfyoafm 101")
-tmp = tmp.run()
+tmp = WebParser("afm 101")
+tmp2 = tmp.run()

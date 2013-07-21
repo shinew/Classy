@@ -1,4 +1,3 @@
-import pdb # for debugging purposes
 import urllib
 import re
 from HTMLParser import HTMLParser
@@ -6,20 +5,24 @@ from courseClasses import Course, Lecture, Tutorial, Reserve
 
 
 class CustomHTMLParser(HTMLParser):
-    # this class reads the HTML page
+    """this class reads a HTML stream, then parses out the "data" fields"""
+
     webData = []
 
-    def customInit(self, data):
-        # TODO: merge this under super()
-        self.webData = data
+    def customInit(self, webData):
+        """internalizes the webData attribute from the WebParser"""
+        self.webData = webData
 
     def handle_data(self, data):
+        """takes out the data"""
         self.webData.append(data.strip())
 
 
 class WebParser:
-    """"This class is created for each and every course"""
-    courseString = "" # "afm 101"
+    """"A WebParser is created for each and every course,
+    to parse the corresponding web page"""
+
+    courseString = "" # e.g. " afm 101 "
     requestURL = "http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl"
     webData = []
     index = -1
@@ -27,70 +30,80 @@ class WebParser:
 
     def __init__(self, courseString, session="1139"):
         self.courseString = courseString
+        # I chose to allow the Course class to parse the input string
+        # for modularity
         self.thisCourse = Course(session, courseString)
-        self.getWebData()
 
     def run(self):
-        self.getWebData()
-        self.parseWebData()
-        if self.index == -1:
-            return # error 1 found
+        """this is the method that the main class can call
+        if successful, returns the Course class
+        if not, returns an error message"""
+
+        if self.getWebData():
+            return "WebPageError"
+        elif self.parseWebData():
+            return "CourseNotFound"
         else:
-            return self.thisCourse # successfully completed
+            self.processCourseInfo()
+            self.postProcess(self.thisCourse)
+            return self.thisCourse
 
     def getWebData(self):
-        # submitting POST form, initializing HTMLParser
-        params = urllib.urlencode({"sess" : self.thisCourse.session, "subject" : self.thisCourse.subject})
-        page = urllib.urlopen(self.requestURL, params)
-        parser = CustomHTMLParser()
-        parser.customInit(self.webData)
-        parser.feed(page.read())
+        """submits a POST query, initializes HTMLParser"""
+
+        try:
+            params = urllib.urlencode({"sess" : self.thisCourse.session,
+                "subject" : self.thisCourse.subject})
+            page = urllib.urlopen(self.requestURL, params)
+            parser = CustomHTMLParser()
+            parser.customInit(self.webData)
+            parser.feed(page.read())
+        except:
+            return "WebPageError"
 
     def parseWebData(self):
+        """We try to find the beginning of the desired table"""
+
         # now, we find the start index and pass that on along
         # with the webData
-        self.findStartIndex()
-        if self.index == -1: # website not found
-            return
-        self.processCourseInfo()
-
-    def findStartIndex(self):
-        # find the start index of the course, given webData is completed
         for i in xrange(len(self.webData)):
             if self.webData[i] == self.thisCourse.subject \
                     and self.webData[i+2] == self.thisCourse.catalogNumber:
                         self.index = i
                         break
+        if self.index == -1: # website not found
+            return "CourseNotFound"
+
 
     def processCourseInfo(self):
+        """now, we do the heavy-duty processing of the data table"""
+
         # sets basic attrs of thisCourse
         self.thisCourse.units = self.webData[self.index+4]
         self.thisCourse.title = self.webData[self.index+6]
         while self.webData[self.index] != "Instructor":
             self.index += 1
 
-        # to get to the first row of information
-       # while not self.webData[self.index].isdigit():
-        #    self.index += 1
-
         # processing row-by-row
-        while self.isEnd(self.webData[self.index]) == False:
+        while self.endOfRow(self.webData[self.index]) == False:
             if self.webData[self.index] != "":
                 self.processSlot()
             self.index += 1
 
     def processSlot(self):
-        if self.webData[self.index+1][:3].upper() == 'LEC':
+        """we check to see if this is the BEGINNING of a valid row"""
+
+        if self.webData[self.index+1][:3].upper() == "LEC":
             # processing a lecture row
             lec = Lecture()
             self.processClass(lec, self.index, self.webData)
             self.thisCourse.lectures.append(lec)
-        elif self.webData[self.index+1][:3].upper() == 'TUT':
+        elif self.webData[self.index+1][:3].upper() == "TUT":
             # processing a tutorial row
             tut = Tutorial()
             self.processClass(tut, self.index, self.webData)
             self.thisCourse.tutorials.append(tut)
-        elif self.webData[self.index][:7].upper() == 'RESERVE':
+        elif self.webData[self.index][:7].upper() == "RESERVE":
             # processing a reserve row
             res = Reserve()
             self.processReserve(res, self.index, self.webData)
@@ -98,32 +111,39 @@ class WebParser:
         # note: we leave out the TST (exam?) times for now
 
     def processReserve(self, res, index, webData):
-        # warning: we merge the next 4 cells together, because the text is split between them
+        """processing reservations for certain types of students"""
+
+        # warning: we merge the next 4 cells together,
+        # because the text is split between them
         reserveText = "".join(webData[index:index+3])
 
         # we leave out the first match, because it is the word "reserve"
-        res.names = map(lambda x: x.strip(), re.findall(r'[\w\d\s\-\/]+', reserveText)[1:])
+        res.names = map(lambda x: x.strip(),
+                re.findall(r"[\w\d\s\-\/]+", reserveText)[1:])
 
-        # we remove the "only" suffix
+        # we remove the "only" suffix (which is annoyingly pointless)
         if "only" in res.names[-1]:
             res.names[-1] = res.names[:-5]
 
-        # in case we took the enrollment numbers after it, we remove number-suffixes (e.g. "1A students1200")
+        # in case we took the enrollment numbers after it, we remove
+        # number-suffixes (e.g. "1A students1200")
         while res.names[-1][-1].isdigit():
             res.names[-1] = res.names[-1][:-1]
 
         # now, we merge the match list
         while not webData[index].isdigit():
             index += 1
+
+        # retriving enrollment numbers
         res.enrlCap = int(webData[index])
         res.enrlTotal = int(webData[index+1])
 
     def processClass(self, lec, index, webData):
-        # note that lec can be a tutorial as well
-        # heavy-duty processing of the data array
+        """we process a typical lecture or tutorial row"""
+
         attr1 = ["classNumber", "compSec", "campusLocation"]
         for i in xrange(len(attr1)):
-            setattr(lec, attr1[i], webData[index+i])
+            setattr(lec, attr1[i], webData[index+i].strip())
         index += 5
 
         attr2 = ["enrlCap", "enrlTotal", "waitCap", "waitTotal"]
@@ -132,20 +152,53 @@ class WebParser:
         index += 4
 
         # parsing the "Times Days/Date" field
-        match = re.search(r'([:\d]+)-([:\d]+)(\w+)', webData[index])
+        match = re.search(r"([:\d]+)-([:\d]+)(\w+)", webData[index])
         attr3 = ["startTime", "endTime", "days"]
         for i in xrange(len(attr3)):
-            setattr(lec, attr3[i], match.group(i+1))
+            setattr(lec, attr3[i], match.group(i+1).strip())
         index += 1
 
         lec.building, lec.room = webData[index].split()
-        lec.instructor = webData[index+1]
+        lec.instructor = webData[index+1].strip()
 
-    def isEnd(self, data):
-        # returns true if the current data-cell is the last cell
-        # of this course; else - false
+    def endOfRow(self, data):
+        """returns true if the current data-cell is the last cell
+        of this course; else - false"""
+
         # the last cell is of the form: ##/##-##/##
         if re.search(r"\d+/\d+-\d+/\d+", data):
             return True
         else:
             return False
+
+    def postProcess(self, course):
+        """this function will convert the class times to minutes-past-
+        the-previous-midnight, and converts the days
+        to numbers"""
+
+        for lec in course.lectures:
+            # first, we convert time to 24hr time
+            # earliest start time for a class is 8:30am
+            # night classes start at/before 7:00pm
+            if 1 <= int(lec.startTime.split(":")[0]) <= 7:
+                lec.startTime, lec.endTime = map(lambda x: "{}:{}".format\
+                        (str(int(x.split(":")[0])+12), x[-2:]), [lec.startTime, lec.endTime])
+
+            # now, we write to lec.sTime, lec.eTime (minutes-past-midnight...)
+            lec.sTime, lec.eTime = map(lambda x: int(x[:2])*60+int(x[-2:]),
+                    [lec.startTime, lec.endTime])
+
+            # finally, we write to lec.ndays, where ndays is a string of numbers, 0->4
+
+            if "M" in lec.days:
+                lec.ndays += "0"
+
+            i = lec.days.find("T")
+            if i != -1  and (i == len(lec.days) - 1 or lec.days[i+1] != 'h'):
+                # basically, if not Th (for Thursday)
+                lec.ndays += "1"
+
+            # now, for the rest of the days...
+            for i in [("W", "2"), ("Th", "3"), ("F", "4")]:
+                if i[0] in lec.days:
+                    lec.ndays += i[1]

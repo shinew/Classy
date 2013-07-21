@@ -57,7 +57,10 @@ class WebParser:
             page = urllib.urlopen(self.requestURL, params)
             parser = CustomHTMLParser()
             parser.customInit(self.webData)
-            parser.feed(page.read())
+
+            # we use .replace() because HTMLParser ignores "&nbsp",
+            # which would screwn up our table
+            parser.feed(page.read().replace("&nbsp", " "))
         except:
             return "WebPageError"
 
@@ -144,7 +147,7 @@ class WebParser:
         attr1 = ["classNumber", "compSec", "campusLocation"]
         for i in xrange(len(attr1)):
             setattr(lec, attr1[i], webData[index+i].strip())
-        index += 5
+        index += 6
 
         attr2 = ["enrlCap", "enrlTotal", "waitCap", "waitTotal"]
         for i in xrange(len(attr2)):

@@ -60,5 +60,5 @@ class Course:
     def __init__(self, session, queryString):
         """processing the queryString e.g. 'afm 101' """
         self.session = session.strip()
-        self.subject = queryString.split()[0].upper().strip()
-        self.catalogNumber = queryString.split()[1].strip()
+        self.subject = queryString.split()[0].upper()
+        self.catalogNumber = queryString.split()[1]

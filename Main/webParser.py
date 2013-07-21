@@ -66,7 +66,7 @@ class WebParser:
 
         try:
             params = urllib.urlencode({"sess" : self.thisCourse.session,
-                "subject" : self.thisCourse.subject})
+                "subject" : self.thisCourse.subject, "cournum" : self.thisCourse.catalogNumber})
             page = urllib.urlopen(WebParser.requestURL, params)
             parser = CustomHTMLParser(self.webData)
 
@@ -198,12 +198,16 @@ class WebParser:
             if 1 <= int(slot.startTime.split(":")[0]) <= 7:
                 slot.startTime, slot.endTime = map(lambda x: "{}:{}".format\
                         (str(int(x.split(":")[0])+12), x[-2:]), [slot.startTime, slot.endTime])
+            elif int(slot.startTime.split(":")[0]) > int(slot.endTime.split(":")[0]):
+                # e.g. 12:00 to 1:00
+                slot.endTime = "{}:{}".format(str(int(slot.endTime.split(":")[0])+12), slot.endTime[-2:])
 
             # now, we write to slot.sTime, slot.eTime (minutes-past-midnight...)
             slot.sTime, slot.eTime = map(lambda x: int(x[:2])*60+int(x[-2:]),
                     [slot.startTime, slot.endTime])
 
-            # finally, we write to slot.ndays, where ndays is a string of numbers, 0->4
+
+            # we write to slot.ndays, where ndays is a string of numbers, 0->4
 
             if "M" in slot.days:
                 slot.ndays += "0"
@@ -217,3 +221,13 @@ class WebParser:
             for i in [("W", "2"), ("Th", "3"), ("F", "4")]:
                 if i[0] in slot.days:
                     slot.ndays += i[1]
+
+            # we make a small adjustment to campusLocation, removing whitespace
+            slot.campusLocation = slot.campusLocation.split()[0]
+
+            # we make the prof name "first last" instead of
+            # "last,first middle"
+
+            if slot.instructor != "":
+                slot.instructor = " ".join(list(reversed(
+                    slot.instructor.split()[0].split(","))))

@@ -60,8 +60,8 @@ class Course:
         """processing the queryString e.g. 'afm 101' """
 
         self.session = session.strip()
-        self.subject = queryString.split()[0].upper()
-        self.catalogNumber = queryString.split()[1]
+        self.subject = queryString.split()[0].upper() #e.g. AFM
+        self.catalogNumber = queryString.split()[1] #e.g. 101
         self.units = ""
         self.title = ""
         self.lectures = []

@@ -179,29 +179,29 @@ class WebParser:
         the-previous-midnight, and converts the days
         to numbers"""
 
-        for lec in course.lectures:
+        for slot in course.lectures + course.tutorials:
             # first, we convert time to 24hr time
             # earliest start time for a class is 8:30am
             # night classes start at/before 7:00pm
-            if 1 <= int(lec.startTime.split(":")[0]) <= 7:
-                lec.startTime, lec.endTime = map(lambda x: "{}:{}".format\
-                        (str(int(x.split(":")[0])+12), x[-2:]), [lec.startTime, lec.endTime])
+            if 1 <= int(slot.startTime.split(":")[0]) <= 7:
+                slot.startTime, slot.endTime = map(lambda x: "{}:{}".format\
+                        (str(int(x.split(":")[0])+12), x[-2:]), [slot.startTime, slot.endTime])
 
-            # now, we write to lec.sTime, lec.eTime (minutes-past-midnight...)
-            lec.sTime, lec.eTime = map(lambda x: int(x[:2])*60+int(x[-2:]),
-                    [lec.startTime, lec.endTime])
+            # now, we write to slot.sTime, slot.eTime (minutes-past-midnight...)
+            slot.sTime, slot.eTime = map(lambda x: int(x[:2])*60+int(x[-2:]),
+                    [slot.startTime, slot.endTime])
 
-            # finally, we write to lec.ndays, where ndays is a string of numbers, 0->4
+            # finally, we write to slot.ndays, where ndays is a string of numbers, 0->4
 
-            if "M" in lec.days:
-                lec.ndays += "0"
+            if "M" in slot.days:
+                slot.ndays += "0"
 
-            i = lec.days.find("T")
-            if i != -1  and (i == len(lec.days) - 1 or lec.days[i+1] != 'h'):
+            i = slot.days.find("T")
+            if i != -1  and (i == len(slot.days) - 1 or slot.days[i+1] != 'h'):
                 # basically, if not Th (for Thursday)
-                lec.ndays += "1"
+                slot.ndays += "1"
 
             # now, for the rest of the days...
             for i in [("W", "2"), ("Th", "3"), ("F", "4")]:
-                if i[0] in lec.days:
-                    lec.ndays += i[1]
+                if i[0] in slot.days:
+                    slot.ndays += i[1]

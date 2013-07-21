@@ -40,10 +40,12 @@ class Reserve:
                 "*" + str(self.enrlTotal)
 
 class Lecture(Slot):
+    """One "lecture" slot"""
     reserves = []
 
 
 class Tutorial(Slot):
+    """One "tutorial" slot"""
     pass
 
 class Course:

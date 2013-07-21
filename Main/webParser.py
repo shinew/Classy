@@ -26,28 +26,40 @@ class WebParser:
 
     requestURL = "http://www.adm.uwaterloo.ca/cgi-bin/cgiwrap/infocour/salook.pl"
 
-    def __init__(self, courseString, session="1139"):
+    def __init__(self, courseString, sessionString):
         self.webData = []
         self.index = -1
         self.thisCourse = None
-        self.courseString = courseString
         # I chose to allow the Course class to parse the input string
         # for modularity
-        self.thisCourse = Course(session, courseString)
+        self.session = self.parseSession(sessionString)
+        self.thisCourse = Course(self.session, courseString)
 
     def run(self):
         """this is the method that the main class can call
         if successful, returns the Course class
         if not, returns an error message"""
 
-        if self.getWebData():
+        if self.session is None:
+            return "SessionError"
+        elif self.getWebData():
             return "WebPageError"
         elif self.parseWebData():
-            return "CourseNotFound"
+            return "CourseNotFoundError"
         else:
             self.processCourseInfo()
             self.postProcess(self.thisCourse)
             return self.thisCourse
+
+    def parseSession(self, sessionString):
+        ret = "1"
+        ret += sessionString.split()[1][-2:] # last 2 digits of the year
+        tempMap = (("fall", "9"), ("winter", "1"), ("spring", "5"))
+        for season in tempMap:
+            if season[0] in sessionString.lower():
+                ret += season[1]
+                return ret
+        return None
 
     def getWebData(self):
         """submits a POST query, initializes HTMLParser"""
@@ -55,7 +67,7 @@ class WebParser:
         try:
             params = urllib.urlencode({"sess" : self.thisCourse.session,
                 "subject" : self.thisCourse.subject})
-            page = urllib.urlopen(self.requestURL, params)
+            page = urllib.urlopen(WebParser.requestURL, params)
             parser = CustomHTMLParser(self.webData)
 
             # we use .replace() because HTMLParser ignores "&nbsp",

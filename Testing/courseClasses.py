@@ -21,7 +21,12 @@ class Slot(object):
         self.endTime = ""
         self.building = ""
         self.room = ""
+
+        # some attributes associated with the prof
         self.instructor = ""
+        self.numRatings = 0
+        self.avgRating = 0.0
+        self.instructorURL = ""
 
     def __repr__(self):
         # TODO: improve the formatting

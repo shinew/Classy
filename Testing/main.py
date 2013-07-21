@@ -1,7 +1,6 @@
 from webParser import WebParser
 from matcher import Matcher
 
-
 sessionString = "fall 2013"
 userCourses = ["math 135", "math 137", "cs 145", "afm 101", "econ 101"]
 
@@ -9,6 +8,11 @@ courses = []
 for courseName in userCourses:
     tmp = WebParser(courseName, sessionString).run()
     courses.append(tmp)
+
+for lec in courses[0].lectures:
+    print lec.instructor
+
+exit()
 
 match = Matcher(courses)
 generator = match.matching()

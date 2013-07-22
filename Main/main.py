@@ -80,12 +80,13 @@ def scheduleGeneration(generator):
 
     for schedule in generator:
         if schedule is None:
+            print "Sorry! No more schedules left! :("
             break
         for slot in schedule:
             print slot
         print
         inp = raw_input("enter 'q' to quit and save your file;"
-                        " enter 'n' to see the next schedule: ")
+                        " enter 'n' to see another possible schedule: ")
         if inp.lower() == 'q':
             break
 

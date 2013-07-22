@@ -29,7 +29,8 @@ class Slot(object):
         self.easiness = 0.0
 
     def __str__(self):
-        attrs = ["classNumber", "compSec", "campusLocation", "startTime", "endTime", "days", "building", "room", "instructor"]
+        attrs = ["classNumber", "compSec", "campusLocation", "startTime",
+                 "endTime", "days", "building", "room", "instructor"]
         return "\t".join(map(str, [getattr(self, x) for x in attrs]))
 
     def __repr__(self):
@@ -68,12 +69,12 @@ class Tutorial(Slot):
 class Course:
     """represents a "course" e.g. AFM 101, ECON 101"""
 
-    def __init__(self, session, queryString):
+    def __init__(self, session, subject, num):
         """processing the queryString e.g. 'afm 101' """
 
         self.session = session.strip()
-        self.subject = queryString.split()[0].upper()  # e.g. AFM
-        self.catalogNumber = queryString.split()[1]  # e.g. 101
+        self.subject = subject  # e.g. AFM
+        self.catalogNumber = num  # e.g. 101
         self.units = ""
         self.title = ""
         self.lectures = []

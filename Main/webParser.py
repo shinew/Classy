@@ -26,10 +26,11 @@ class WebParser:
     def __init__(self, courseString, sessionString):
         self.webData = []
         self.index = -1
-        # I chose to allow the Course class to parse the input string
         # for modularity
         self.session = self.parseSession(sessionString)
-        self.thisCourse = Course(self.session, courseString)
+        courseString = map(lambda x: x.upper(), courseString.split())
+        self.thisCourse = Course(self.session, courseString[0],
+                                 courseString[1])
 
     def run(self):
         """this is the method that the main class can call
@@ -79,7 +80,7 @@ class WebParser:
 
         # now, we find the start index and pass that on along
         # with the webData
-        for i in xrange(len(self.webData)):
+        for i in xrange(len(self.webData)-3):
             if self.webData[i] == self.thisCourse.subject \
                     and self.webData[i+2] == self.thisCourse.catalogNumber:
                         self.index = i
@@ -107,7 +108,9 @@ class WebParser:
     def processSlot(self):
         """we check to see if this is the BEGINNING of a valid row"""
 
-        if self.webData[self.index+1][:3].upper() == "LEC":
+        if self.webData[self.index+1][:3].upper() == "LEC" \
+                and "ONLINE" not in self.webData[self.index+2]:
+            # we don't want online classes!
             # processing a lecture row
             lec = Lecture()
             self.processClass(lec, self.index, self.webData)
@@ -172,15 +175,19 @@ class WebParser:
             setattr(lec, attr3[i], match.group(i+1).strip())
         index += 1
 
-        lec.building, lec.room = webData[index].split()
+        if len(webData[index].split()) == 2:
+            # sometimes, no building and room will be given
+            lec.building, lec.room = webData[index].split()
         lec.instructor = webData[index+1].strip()
 
     def endOfRow(self, data):
         """returns true if the current data-cell is the last cell
         of this course; else - false"""
 
-        # the last cell is of the form: ##/##-##/##
-        if re.search(r"\d+/\d+-\d+/\d+", data):
+        # the last cell is of the form: ##/##-##/## or
+        # "Information last updated
+        if re.search(r"\d+/\d+-\d+/\d+", data) or \
+                "Information last updated" in data:
             return True
         else:
             return False

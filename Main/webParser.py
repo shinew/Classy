@@ -176,9 +176,10 @@ class WebParser:
         index += 1
 
         if len(webData[index].split()) == 2:
-            # sometimes, no building and room will be given
+            # sometimes, no building, room, and instructor will be given
+            # this is mostly for Laurier courses
             lec.building, lec.room = webData[index].split()
-        lec.instructor = webData[index+1].strip()
+            lec.instructor = webData[index+1].strip()
 
     def endOfRow(self, data):
         """returns true if the current data-cell is the last cell

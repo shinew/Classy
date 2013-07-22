@@ -15,26 +15,10 @@ limitations under the License.
 """
 
 
-import time
 from webParser import WebParser
 from matcher import Matcher
 from profParser import RateMyProfParser
 from user import User
-
-
-# default values left for debugging
-sessionString = "fall 2013"
-# userCourses = ["math 135", "math 137", "cs 145", "afm 101", "econ 101"]
-userCourses = []
-courses = []
-generator = None
-myTime = time.time()
-user = User()
-
-
-def programTime():
-    print "This program took {:.2f}s to complete.".format(time.time()
-                                                          - myTime)
 
 
 def getUserInfo(userCourses):
@@ -48,24 +32,23 @@ def getUserInfo(userCourses):
                               "without quotes): ").strip().lower()
 
     print "\nPlease add courses in decreasing importance."
+    print "Format: 'cs 145' (without quotes)"
 
     cour = ""
     while cour.strip() != "0":
-        print "Please add a(nother) course (e.g. 'math 145')."
         cour = raw_input("Enter '0' to stop adding: ").strip().upper()
         userCourses.append(cour)
-        print
     userCourses.pop()  # the last '0'
+    return sessionString
 
 
-def queryUniversity(userCourses, courses, user):
+def queryUniversity(userCourses, courses, user, sessionString):
     print "Currently querying adm.uwaterloo.ca..."
     for courseName in userCourses:
         tmp = WebParser(courseName, sessionString).run()
         courses.append(tmp)
     print "Done!\n"
 
-    # Addition: which reservations apply?
     print "Which reservation categories apply to you?"
 
     askedNames = set()
@@ -165,10 +148,21 @@ def saveToFile():
               "day.".format(outputFile+".txt")
 
 
-getUserInfo(userCourses)
-queryUniversity(userCourses, courses, user)
-queryRateMyProfessors(courses)
-postProcessing(courses)
-# programTime()
-lastSchedule = scheduleGeneration(generator)
-saveToFile(lastSchedule)
+def main():
+    # variables
+    userCourses = []
+    courses = []
+    generator = None
+    user = User()
+    sessionString = ""
+
+    # program starts here
+    sessionString = getUserInfo(userCourses)
+    queryUniversity(userCourses, courses, user, sessionString)
+    queryRateMyProfessors(courses)
+    postProcessing(courses)
+    lastSchedule = scheduleGeneration(generator)
+    saveToFile(lastSchedule)
+
+if __name__ == "__main__":
+    main()

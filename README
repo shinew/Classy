@@ -1,5 +1,5 @@
 Have you ever felt that manually checking your courses for time conflicts is too slow, error-prone, and/or tedious? Remember the time when you *just* added a new course, and your schedule falls apart? I sure have.
-This software will help UWaterloo students select and optimize course selections.
+This software will help UWaterloo students select and optimize course selections. Optimizations include: no time conflicts, highest rated profs first, and taking into account of reserved seatings. Also, multiple schedule generation (in case you're not happy with our first choice!).
 
 ===INSTALLATION===
 Windows:

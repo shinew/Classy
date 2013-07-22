@@ -45,8 +45,12 @@ def getUserInfo(userCourses):
 def queryUniversity(userCourses, courses, user, sessionString):
     print "Currently querying adm.uwaterloo.ca..."
     for courseName in userCourses:
-        tmp = WebParser(courseName, sessionString).run()
-        courses.append(tmp)
+        newCourse = WebParser(courseName, sessionString).run()
+        courses.append(newCourse)
+        if type(newCourse) is str:
+            print "An error has occured with {0}: " \
+                  "{1}. {0} will be ignored.".format(courseName, newCourse)
+            courses.pop()
     print "Done!\n"
 
     print "Which reservation categories apply to you?"
@@ -97,7 +101,7 @@ def queryRateMyProfessors(courses):
 
 
 def postProcessing(courses):
-    # sort by ease, then quality, then number of ratings
+    """sort by ease, then quality, then number of ratings"""
     for course in courses:
         course.lectures.sort(key=lambda x: (x.easiness, x.quality,
                                             x.numRatings), reverse=True)
@@ -105,7 +109,9 @@ def postProcessing(courses):
                                              x.numRatings), reverse=True)
 
 
-def scheduleGeneration(generator):
+def scheduleGeneration(courses):
+    """generates a schedule"""
+
     print "All calculations complete!"
     print "You will be given a chance to save your selected schedule " \
           "later."
@@ -125,15 +131,17 @@ def scheduleGeneration(generator):
         inp = raw_input("enter 's' to save the last schedule to a file; "
                         "enter 'n' to see another possible schedule: ")
         if inp.lower() == 's':
-            break
+            return schedule
+    print "\nSorry! No more schedules left! :(\n"
     return schedule
 
 
-def saveToFile():
-    print "\nSorry! No more schedules left! :(\n"
+def saveToFile(schedule):
+    """saves to file"""
+
     print "Would you like to save the last schedule to a file?"
 
-    ans = raw_input("Enter 'y' if you do. 'n' if you don't.").lower()
+    ans = raw_input("Enter 'y' if you do; 'n' if you don't: ").lower()
     if ans != 'y':
         print "Okay. Have a nice day then!"
 
@@ -152,7 +160,6 @@ def main():
     # variables
     userCourses = []
     courses = []
-    generator = None
     user = User()
     sessionString = ""
 
@@ -161,7 +168,7 @@ def main():
     queryUniversity(userCourses, courses, user, sessionString)
     queryRateMyProfessors(courses)
     postProcessing(courses)
-    lastSchedule = scheduleGeneration(generator)
+    lastSchedule = scheduleGeneration(courses)
     saveToFile(lastSchedule)
 
 if __name__ == "__main__":

@@ -1,3 +1,20 @@
+"""
+Copyright 2013 Shine Wang
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+
 import urllib
 import re
 from HTMLParser import HTMLParser
@@ -26,10 +43,11 @@ class WebParser:
     def __init__(self, courseString, sessionString):
         self.webData = []
         self.index = -1
-        # I chose to allow the Course class to parse the input string
         # for modularity
         self.session = self.parseSession(sessionString)
-        self.thisCourse = Course(self.session, courseString)
+        courseString = map(lambda x: x.upper(), courseString.split())
+        self.thisCourse = Course(self.session, courseString[0],
+                                 courseString[1])
 
     def run(self):
         """this is the method that the main class can call
@@ -79,7 +97,7 @@ class WebParser:
 
         # now, we find the start index and pass that on along
         # with the webData
-        for i in xrange(len(self.webData)):
+        for i in xrange(len(self.webData)-3):
             if self.webData[i] == self.thisCourse.subject \
                     and self.webData[i+2] == self.thisCourse.catalogNumber:
                         self.index = i
@@ -101,11 +119,15 @@ class WebParser:
             if self.webData[self.index] != "":
                 self.processSlot()
             self.index += 1
+            if self.index == len(self.webData):
+                return
 
     def processSlot(self):
         """we check to see if this is the BEGINNING of a valid row"""
 
-        if self.webData[self.index+1][:3].upper() == "LEC":
+        if self.webData[self.index+1][:3].upper() == "LEC" \
+                and "ONLINE" not in self.webData[self.index+2]:
+            # we don't want online classes!
             # processing a lecture row
             lec = Lecture()
             self.processClass(lec, self.index, self.webData)
@@ -170,23 +192,30 @@ class WebParser:
             setattr(lec, attr3[i], match.group(i+1).strip())
         index += 1
 
-        lec.building, lec.room = webData[index].split()
-        lec.instructor = webData[index+1].strip()
+        if len(webData[index].split()) == 2:
+            # sometimes, no building, room, and instructor will be given
+            # this is mostly for Laurier courses
+            lec.building, lec.room = webData[index].split()
+            lec.instructor = webData[index+1].strip()
 
     def endOfRow(self, data):
         """returns true if the current data-cell is the last cell
         of this course; else - false"""
 
-        # the last cell is of the form: ##/##-##/##
-        if re.search(r"\d+/\d+-\d+/\d+", data):
+        # the last cell is of the form: ##/##-##/## or
+        # "Information last updated
+        if re.search(r"\d+/\d+-\d+/\d+", data) or \
+                "Information last updated" in data:
             return True
         else:
             return False
 
     def postProcess(self, course):
         """this function will convert the class times to minutes-past-
-        the-previous-midnight, and converts the days
-        to numbers"""
+        the-previous-midnight, and converts the days to numbers.
+        Also, some reservation-postprocessing"""
+
+        map(lambda x: x.calcMiscSeats(), course.lectures)
 
         for slot in course.lectures + course.tutorials:
             # first, we convert time to 24hr time

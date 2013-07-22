@@ -7,7 +7,7 @@ Windows:
 2.	Download (at least) the Main folder of this project (See the "Download ZIP" button to the right)
 3.	Run the main.py file from the Main folder. This can be done by:
 		a) Right-click the file, click "Edit with IDLE", then press F5, or
-		b) Navigate to the folder with Command Prompt, type "python main.py (NOTE: this will not work if you don't have python in your path)
+		b) Navigate to the folder with Command Prompt, type "python main.py (NOTE: this will not work if you don't have python in your path), or
 		c) Double-click the file (NOTE: this will not work if you don't have python in your path)
 4.	Follow cues to generate schedule(s)
 
@@ -16,3 +16,19 @@ Macs/Linux:
 
 ===BUG REPORTS, ETC===
 Please email me at shinewang@live.ca to report any bugs, and/or if you want to work on this project with me! :)
+
+===COPYRIGHT AND LICENSE===
+
+Copyright 2013 Shine Wang
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.

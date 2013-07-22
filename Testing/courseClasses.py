@@ -1,3 +1,20 @@
+"""
+Copyright 2013 Shine Wang
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+
 class Slot(object):
     """the basic template containing fundamental attributes of a
     university class. It is named "Slot" to avoid confusing it
@@ -28,8 +45,12 @@ class Slot(object):
         self.quality = 0.0
         self.easiness = 0.0
 
+    def __str__(self):
+        attrs = ["classNumber", "compSec", "campusLocation", "startTime",
+                 "endTime", "days", "building", "room", "instructor"]
+        return "\t".join(map(str, [getattr(self, x) for x in attrs]))
+
     def __repr__(self):
-        # TODO: improve the formatting
         attrs = ["classNumber", "compSec", "campusLocation", "enrlCap",
                  "enrlTotal", "waitCap", "waitTotal", "days",
                  "startTime", "endTime", "building", "room", "instructor",
@@ -55,6 +76,35 @@ class Lecture(Slot):
     def __init__(self):
         super(Lecture, self).__init__()
         self.reserves = []
+        # reservation variables
+        self.miscSeats = 0  # these are the "general" seats left
+
+        # for classes like ECON 101, some slots are ONLY for certain people
+        self.thisUserCanAdd = False
+
+    def calcMiscSeats(self):
+        """calculates enrolment spots"""
+        self.miscSeats = self.enrlCap
+        for res in self.reserves:
+            self.miscSeats -= res.enrlCap
+
+        if self.miscSeats > 0 and self.enrlCap - self.enrlTotal > 0:
+            # yay, we have leftover seats!
+            self.thisUserCanAdd = True
+
+    def postProcess(self, userTypes):
+        """post-processing the reservations"""
+        if self.thisUserCanAdd or len(self.reserves) == 0:
+            # already good, or no reservations
+            return
+
+        for res in self.reserves:
+            for name in res.names:
+                if name in userTypes:
+                    # yay, this user fits!
+                    if res.enrlCap - res.enrlTotal > 0:
+                        self.thisUserCanAdd = True
+                        return
 
 
 class Tutorial(Slot):
@@ -65,12 +115,12 @@ class Tutorial(Slot):
 class Course:
     """represents a "course" e.g. AFM 101, ECON 101"""
 
-    def __init__(self, session, queryString):
+    def __init__(self, session, subject, num):
         """processing the queryString e.g. 'afm 101' """
 
         self.session = session.strip()
-        self.subject = queryString.split()[0].upper()  # e.g. AFM
-        self.catalogNumber = queryString.split()[1]  # e.g. 101
+        self.subject = subject  # e.g. AFM
+        self.catalogNumber = num  # e.g. 101
         self.units = ""
         self.title = ""
         self.lectures = []

@@ -1,3 +1,20 @@
+"""
+Copyright 2013 Shine Wang
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+
 import urllib
 from webParser import CustomHTMLParser
 
@@ -11,6 +28,9 @@ class RateMyProfParser:
     # which is the limit for a page
     requestURL = "http://www.ratemyprofessors.com/SelectTeacher.jsp" \
                  "?searchName={}&search_submit1=Search&sid={}&pageNo={}"
+    cacheFile = "teacherCache.txt"
+    cache = {}
+    gotCache = False
 
     def __init__(self, name, schoolID="1490"):  # professor's name
         # 1490 = Waterloo
@@ -20,9 +40,31 @@ class RateMyProfParser:
         self.schoolID = schoolID
         self.webData = []
 
+    def getCache(self):
+        """get values of teacher cache"""
+        if self.gotCache:
+            # we only want to read the file once
+            return
+        self.gotCache = True
+        try:
+            # file data stored in standard "key\nvalue\n" format
+            f = open(self.cacheFile, "r")
+            name = f.readline().strip()
+            while name:
+                self.cache[name] = eval(f.readline().strip())
+                name = f.readline().strip()
+            f.close()
+        except:
+            return
+
     def getInfo(self):
         """will return (avgRating, numRatings) if exists.
         Else, return None"""
+
+        # get cache names (if they exist)
+        self.getCache()
+        if self.name in self.cache:
+            return self.cache[self.name]
 
         if self.name == "":
             # lecture/tutorial has no name
@@ -38,6 +80,10 @@ class RateMyProfParser:
             ret = self.parseWebData()
             if ret:
                 # form of: (# ratings, overall quality, easiness)
+                f = open(self.cacheFile, "a")
+                f.write(self.name + "\n")
+                f.write(str(ret) + "\n")
+                f.close()
                 return ret
             else:
                 self.webData = []  # clear the data

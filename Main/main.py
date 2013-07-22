@@ -1,3 +1,20 @@
+"""
+Copyright 2013 Shine Wang
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+"""
+
+
 import time
 from webParser import WebParser
 from matcher import Matcher
@@ -126,17 +143,26 @@ def scheduleGeneration(generator):
                         "enter 'n' to see another possible schedule: ")
         if inp.lower() == 's':
             break
+    return schedule
 
-    print "Sorry! No more schedules left! :(\n"
-    outputFile = raw_input("\nWhere would you like to save this schedule? "
-                           "Please enter a file name: ")
-    f = open(outputFile+".txt", "w")
-    for slot in schedule:
-        f.write(str(slot) + "\n")
-    f.close()
 
-    print "\nOkay! The file is saved at {}. Have a nice " \
-          "day.".format(outputFile+".txt")
+def saveToFile():
+    print "\nSorry! No more schedules left! :(\n"
+    print "Would you like to save the last schedule to a file?"
+
+    ans = raw_input("Enter 'y' if you do. 'n' if you don't.").lower()
+    if ans != 'y':
+        print "Okay. Have a nice day then!"
+
+    else:
+        outputFile = raw_input("\nPlease enter a file name: ")
+        f = open(outputFile+".txt", "w")
+        for slot in schedule:
+            f.write(str(slot) + "\n")
+        f.close()
+
+        print "\nOkay! The file is saved at {}. Have a nice " \
+              "day.".format(outputFile+".txt")
 
 
 getUserInfo(userCourses)
@@ -144,4 +170,5 @@ queryUniversity(userCourses, courses, user)
 queryRateMyProfessors(courses)
 postProcessing(courses)
 # programTime()
-scheduleGeneration(generator)
+lastSchedule = scheduleGeneration(generator)
+saveToFile(lastSchedule)

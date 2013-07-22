@@ -25,14 +25,15 @@ class Slot(object):
         # some attributes associated with the prof
         self.instructor = ""
         self.numRatings = 0
-        self.avgRating = 0.0
-        self.instructorURL = ""
+        self.quality = 0.0
+        self.easiness = 0.0
 
     def __repr__(self):
         # TODO: improve the formatting
         attrs = ["classNumber", "compSec", "campusLocation", "enrlCap",
                  "enrlTotal", "waitCap", "waitTotal", "days",
-                 "startTime", "endTime", "building", "room", "instructor"]
+                 "startTime", "endTime", "building", "room", "instructor",
+                 "numRatings", "quality", "easiness"]
         return "*".join(map(str, [getattr(self, x) for x in attrs]))
 
 

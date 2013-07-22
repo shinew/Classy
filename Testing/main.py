@@ -13,20 +13,23 @@ for courseName in userCourses:
 # rateMyProfs
 for i, course in enumerate(courses):
     print "Doing course", i+1
-    for slot in course.lectures:
+
+    for j, slot in enumerate(course.lectures):
+        print "Doing lecture", j+1
         ret = RateMyProfParser(slot.instructor).getInfo()
         if ret:
             slot.numRatings, slot.quality, slot.easiness = ret
-    for slot in course.tutorials:
+
+    for j, slot in enumerate(course.tutorials):
+        print "Doing tutorial", j+1
         ret = RateMyProfParser(slot.instructor).getInfo()
         if ret:
             slot.numRatings, slot.quality, slot.easiness = ret
 
 # now, we sort by ease, then quality, then number of ratings
 for course in courses:
-    course.lectures.sort(key = lambda x: (x.easiness, x.quality,
-                                          x.numRatings), reverse=True)
-
+    course.lectures.sort(key=lambda x: (x.easiness, x.quality,
+                                        x.numRatings), reverse=True)
 
 # then we generate non-time-conflicting schedules
 match = Matcher(courses)

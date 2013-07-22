@@ -30,7 +30,7 @@ class RateMyProfParser:
 
         # start at page 1
         pageNum = 1
-        while True:
+        while pageNum <= 3:  # if there are 60 Wang's, for example, tough
             # two possible errors (page out of range, or website down)
             err = self.getWebData(pageNum)
             if err:
@@ -52,7 +52,8 @@ class RateMyProfParser:
             parser = CustomHTMLParser(self.webData)
             parser.feed(page.read().replace("&nbsp", " "))
             for data in self.webData:
-                if "Invalid page number" in data:
+                if "Invalid page number" in data or \
+                        "didn't return any results for professors" in data:
                     # essentially, page out of range
                     return "InvalidPageError"
         except:

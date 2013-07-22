@@ -12,7 +12,7 @@ for courseName in userCourses:
 
 # rateMyProfs
 for i, course in enumerate(courses):
-    print "Doing course", i
+    print "Doing course", i+1
     for slot in course.lectures:
         ret = RateMyProfParser(slot.instructor).getInfo()
         if ret:
@@ -22,9 +22,10 @@ for i, course in enumerate(courses):
         if ret:
             slot.numRatings, slot.quality, slot.easiness = ret
 
-# now, we sort by rating
+# now, we sort by ease, then quality, then number of ratings
 for course in courses:
-    course.lectures.sort(key = lambda x: )
+    course.lectures.sort(key = lambda x: (x.easiness, x.quality,
+                                          x.numRatings), reverse=True)
 
 
 # then we generate non-time-conflicting schedules

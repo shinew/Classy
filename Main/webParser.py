@@ -195,8 +195,10 @@ class WebParser:
 
     def postProcess(self, course):
         """this function will convert the class times to minutes-past-
-        the-previous-midnight, and converts the days
-        to numbers"""
+        the-previous-midnight, and converts the days to numbers.
+        Also, some reservation-postprocessing"""
+
+        map(lambda x: x.calcMiscSeats(), course.lectures)
 
         for slot in course.lectures + course.tutorials:
             # first, we convert time to 24hr time

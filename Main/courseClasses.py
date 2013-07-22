@@ -59,6 +59,35 @@ class Lecture(Slot):
     def __init__(self):
         super(Lecture, self).__init__()
         self.reserves = []
+        # reservation variables
+        self.miscSeats = 0  # these are the "general" seats left
+
+        # for classes like ECON 101, some slots are ONLY for certain people
+        self.thisUserCanAdd = False
+
+    def calcMiscSeats(self):
+        """calculates enrolment spots"""
+        self.miscSeats = self.enrlCap
+        for res in self.reserves:
+            self.miscSeats -= res.enrlCap
+
+        if self.miscSeats > 0 and self.enrlCap - self.enrlTotal > 0:
+            # yay, we have leftover seats!
+            self.thisUserCanAdd = True
+
+    def postProcess(self, userTypes):
+        """post-processing the reservations"""
+        if self.thisUserCanAdd or len(self.reserves) == 0:
+            # already good, or no reservations
+            return
+
+        for res in self.reserves:
+            for name in res.names:
+                if name in userTypes:
+                    # yay, this user fits!
+                    if res.enrlCap - res.enrlTotal > 0:
+                        self.thisUserCanAdd = True
+                        return
 
 
 class Tutorial(Slot):

@@ -58,6 +58,9 @@ class Matcher:
                     yield y
             else:
                 for i, lec in enumerate(self.courses[index].lectures):
+                    if not lec.thisUserCanAdd:
+                        # this user can't use this slot
+                        continue
                     times = self.notOccupied(lec)
                     if times:
                         self.lecIndices[index] = i

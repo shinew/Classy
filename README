@@ -5,7 +5,10 @@ This software will help UWaterloo students select and optimize course selections
 Windows:
 1.	Install the latest 2.x Python from http://python.org/download/
 2.	Download (at least) the Main folder of this project (See the "Download ZIP" button to the right)
-3.	Run main.py using the command line/prompt (cmd) with: python main.py
+3.	Run the main.py file from the Main folder. This can be done by:
+		a) Right-click the file, click "Edit with IDLE", then press F5, or
+		b) Navigate to the folder with Command Prompt, type "python main.py (NOTE: this will not work if you don't have python in your path)
+		c) Double-click the file (NOTE: this will not work if you don't have python in your path)
 4.	Follow cues to generate schedule(s)
 
 Macs/Linux:

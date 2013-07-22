@@ -40,23 +40,29 @@ class WebParser:
     requestURL = "http://www.adm.uwaterloo.ca/cgi-bin/" \
                  "cgiwrap/infocour/salook.pl"
 
-    def __init__(self, courseString, sessionString):
+    def __init__(self):
         self.webData = []
         self.index = -1
-        # for modularity
-        self.session = self.parseSession(sessionString)
-        courseString = map(lambda x: x.upper(), courseString.split())
-        self.thisCourse = Course(self.session, courseString[0],
-                                 courseString[1])
+        self.session = None
+        self.thisCourse = None
 
-    def run(self):
+    def run(self, courseString, sessionString):
         """this is the method that the main class can call
         if successful, returns the Course class
         if not, returns an error message"""
 
+        self.session = self.parseSession(sessionString)
         if self.session is None:
-            return "SessionError"
-        elif self.getWebData(self.thisCourse):
+            return "SessionNameWrongError"
+
+        courseString = map(lambda x: x.upper(), courseString.split())
+        try:
+            self.thisCourse = Course(self.session, courseString[0],
+                                     courseString[1])
+        except:
+            return "CourseNameWrongError"
+
+        if self.getWebData(self.thisCourse):
             return "WebPageError"
         elif self.parseWebData():
             return "CourseNotFoundError"
@@ -66,14 +72,16 @@ class WebParser:
             return self.thisCourse
 
     def parseSession(self, sessionString):
-        ret = "1"
-        ret += sessionString.split()[1][-2:]  # last 2 digits of the year
-        tempMap = (("fall", "9"), ("winter", "1"), ("spring", "5"))
-        for season in tempMap:
-            if season[0] in sessionString.lower():
-                ret += season[1]
-                return ret
-        return None
+        try:
+            ret = "1"
+            ret += sessionString.split()[1][-2:]  # last 2 digits of year
+            tempMap = (("fall", "9"), ("winter", "1"), ("spring", "5"))
+            for season in tempMap:
+                if season[0] in sessionString.lower():
+                    ret += season[1]
+                    return ret
+        except:
+            return None
 
     def getWebData(self, course):
         """submits a POST query, initializes HTMLParser"""

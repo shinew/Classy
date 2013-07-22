@@ -45,7 +45,7 @@ def getUserInfo(userCourses):
 def queryUniversity(userCourses, courses, user, sessionString):
     print "Currently querying adm.uwaterloo.ca..."
     for courseName in userCourses:
-        newCourse = WebParser(courseName, sessionString).run()
+        newCourse = WebParser().run(courseName, sessionString)
         courses.append(newCourse)
         if type(newCourse) is str:
             print "An error has occured with {0}: " \
@@ -118,9 +118,7 @@ def scheduleGeneration(courses):
     print "Format is: "
     attrs = ["Class #", "CompSec", "Location", "Start", "End", "Days",
              "Building", "Room", "Instructor"]
-    for i in attrs:
-        print i,
-    print
+    print "\t".join(attrs)
 
     generator = Matcher(courses).matching()
 

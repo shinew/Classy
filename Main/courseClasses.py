@@ -28,8 +28,11 @@ class Slot(object):
         self.quality = 0.0
         self.easiness = 0.0
 
+    def __str__(self):
+        attrs = ["classNumber", "compSec", "campusLocation", "startTime", "endTime", "days", "building", "room", "instructor"]
+        return "\t".join(map(str, [getattr(self, x) for x in attrs]))
+
     def __repr__(self):
-        # TODO: improve the formatting
         attrs = ["classNumber", "compSec", "campusLocation", "enrlCap",
                  "enrlTotal", "waitCap", "waitTotal", "days",
                  "startTime", "endTime", "building", "room", "instructor",

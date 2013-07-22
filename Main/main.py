@@ -17,7 +17,7 @@ def programTime():
                                                           - myTime)
 
 def getUserInfo(userCourses):
-    print "HI there! I am Classy, and I'll optimize your course selection."
+    print "Hello! I am Classy, and I'll optimize your course selection."
     sessionString = raw_input("Please tell me which session are in " \
             "(e.g. 'fall 2013' without quotes): ")
     cour = ""
@@ -79,10 +79,12 @@ def scheduleGeneration(generator):
             break
     outputFile = raw_input("Where would you like to save this schedule?" \
           " Please enter a file name: ")
-    f = open(outputFile, "w")
+    f = open(outputFile+".txt", "w")
     for slot in schedule:
-        f.write(repr(slot) + "\n")
+        f.write(str(slot) + "\n")
     f.close()
+    print "Okay! The file is saved at {}. Have a nice" \
+          "day.".format(outputFile+".txt")
 
 getUserInfo(userCourses)
 queryUniversity(userCourses, courses)

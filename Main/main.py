@@ -116,8 +116,8 @@ def scheduleGeneration(courses):
     print "You will be given a chance to save your selected schedule " \
           "later."
     print "Format is: "
-    attrs = ["Class #", "CompSec", "Location", "Start", "End", "Days",
-             "Building", "Room", "Instructor"]
+    attrs = ["Class#", "CompSec", "Place", "Start", "End", "Days",
+             "Building Room", "Instructor"]
     print "\t".join(attrs)
 
     generator = Matcher(courses).matching()

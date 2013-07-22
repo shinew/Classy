@@ -12,27 +12,32 @@ courses = []
 generator = None
 myTime = time.time()
 
+
 def programTime():
     print "This program took {:.2f}s to complete.".format(time.time()
                                                           - myTime)
 
+
 def getUserInfo(userCourses):
     print "Hello! I am Classy, and I'll optimize your course selection."
-    sessionString = raw_input("Please tell me which session are in " \
-            "(e.g. 'fall 2013' without quotes): ")
+    sessionString = raw_input("Please tell me which session are in "
+                              "(e.g. 'fall 2013' without quotes): ")
     cour = ""
+    print
     while cour.strip() != "0":
-        cour = raw_input("Please add a course (e.g. 'math 145' " \
-                "without quotes).\nEnter '0' (without quotes) to" \
-                " stop adding: ")
+        cour = raw_input("Please add a course (e.g. 'math 145' "
+                         "without quotes).\nEnter '0' (without quotes) to"
+                         " stop adding: ")
         userCourses.append(cour)
     userCourses.pop()  # the last '0'
+
 
 def queryUniversity(userCourses, courses):
     print "Currently querying adm.uwaterloo.ca..."
     for courseName in userCourses:
         tmp = WebParser(courseName, sessionString).run()
         courses.append(tmp)
+
 
 def queryRateMyProfessors(courses):
     print "Currently querying ratemyprofessors.com..."
@@ -52,18 +57,24 @@ def queryRateMyProfessors(courses):
             if ret:
                 slot.numRatings, slot.quality, slot.easiness = ret
 
+
 def postProcessing(courses):
     # sort by ease, then quality, then number of ratings
     for course in courses:
         course.lectures.sort(key=lambda x: (x.easiness, x.quality,
                                             x.numRatings), reverse=True)
 
-    # then we generate non-time-conflicting schedules
 
 def scheduleGeneration(generator):
     print "All calculations complete!"
     print "You will be given a chance to save your selected schedule" \
           " later."
+    print "Format is: "
+    attrs = ["Class #", "CompSec", "Location", "Start", "End", "Days",
+             "Building", "Room", "Instructor"]
+    for i in attrs:
+        print i,
+    print
 
     generator = Matcher(courses).matching()
 
@@ -73,18 +84,21 @@ def scheduleGeneration(generator):
         for slot in schedule:
             print slot
         print
-        inp = raw_input("enter 'q' to quit and save your file;" \
+        inp = raw_input("enter 'q' to quit and save your file;"
                         " enter 'n' to see the next schedule: ")
         if inp.lower() == 'q':
             break
-    outputFile = raw_input("Where would you like to save this schedule?" \
-          " Please enter a file name: ")
+
+    outputFile = raw_input("\nWhere would you like to save this schedule?"
+                           " Please enter a file name: ")
     f = open(outputFile+".txt", "w")
     for slot in schedule:
         f.write(str(slot) + "\n")
     f.close()
-    print "Okay! The file is saved at {}. Have a nice" \
-          "day.".format(outputFile+".txt")
+
+    print "\nOkay! The file is saved at {}. Have a nice" \
+          " day.".format(outputFile+".txt")
+
 
 getUserInfo(userCourses)
 queryUniversity(userCourses, courses)

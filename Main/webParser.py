@@ -101,6 +101,8 @@ class WebParser:
             if self.webData[self.index] != "":
                 self.processSlot()
             self.index += 1
+            if self.index == len(self.webData):
+                return
 
     def processSlot(self):
         """we check to see if this is the BEGINNING of a valid row"""

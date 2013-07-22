@@ -4,7 +4,7 @@ This software will help UWaterloo students select and optimize course selections
 ===INSTALLATION===
 Windows:
 1.	Install the latest 2.x Python from http://python.org/download/
-2.	Download (at least) the Main folder of this project
+2.	Download (at least) the Main folder of this project (See the "Download ZIP" button to the right)
 3.	Run main.py using the command line/prompt (cmd) with: python main.py
 4.	Follow cues to generate schedule(s)
 

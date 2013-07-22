@@ -20,7 +20,7 @@ def programTime():
 
 def getUserInfo(userCourses):
     print "Hello! I am Classy, and I'll optimize your course selection."
-    sessionString = raw_input("Please tell me which session are in "
+    sessionString = raw_input("Please tell me which session you are in "
                               "(e.g. 'fall 2013' without quotes): ")
     cour = ""
     print

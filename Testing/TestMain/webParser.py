@@ -164,6 +164,10 @@ class WebParser:
         if "only" in res.name:
             res.name = res.name[:-5]
 
+        # also, the "students" suffx
+        if "students" in res.name or "Students" in res.name:
+            res.name = res.name[:-9]
+
         # now, we merge the match list
         while not webData[index].isdigit():
             index += 1

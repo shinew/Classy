@@ -124,8 +124,8 @@ def scheduleGeneration(courses):
           "later."
     print "Format is: "
     attrs = ["Class#", "CompSec", "Place", "Start", "End", "Days",
-             "Place   Room", "Instructor"]
-    formatText = "{:9}".format("Course") + "\t".join(attrs)
+             "Building", "Room", "Instructor"]
+    formatText = "{:9}\t".format("Course") + "\t".join(attrs)
     print formatText
 
     generator = Matcher(courses).matching()

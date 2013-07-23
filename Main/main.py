@@ -22,6 +22,7 @@ from user import User
 
 
 def getUserInfo(userCourses):
+    print
     print "Hello! I am Classy, and I'll optimize your course selection."
     print "The current optimizations are:"
     print "1.\tno time conflicts."
@@ -123,9 +124,9 @@ def scheduleGeneration(courses):
           "later."
     print "Format is: "
     attrs = ["Class#", "CompSec", "Place", "Start", "End", "Days",
-             "Building Room", "Instructor"]
-    print "{:8}\t".format("Course"),
-    print "\t".join(attrs)
+             "Place   Room", "Instructor"]
+    formatText = "{:9}".format("Course") + "\t".join(attrs)
+    print formatText
 
     generator = Matcher(courses).matching()
     schedule = ""
@@ -136,12 +137,12 @@ def scheduleGeneration(courses):
         inp = raw_input("enter 's' to save the last schedule to a file; "
                         "enter 'n' to see another possible schedule: ")
         if inp.lower() == 's':
-            return schedule
+            return schedule, formatText
     print "\nSorry! No more schedules left! :(\n"
-    return schedule
+    return schedule, formatText
 
 
-def saveToFile(schedule):
+def saveToFile(schedule, formatText):
     """saves to file"""
 
     print "Would you like to save the last schedule to a file?"
@@ -153,6 +154,7 @@ def saveToFile(schedule):
     else:
         outputFile = raw_input("\nPlease enter a file name: ")
         with open(outputFile+".txt", "w") as f:
+            f.write(formatText + "\n")
             for slot in schedule:
                 f.write(str(slot) + "\n")
 
@@ -174,8 +176,8 @@ def main():
     queryUniversity(userCourses, courses, user, sessionString)
     queryRateMyProfessors(courses)
     postProcessing(courses)
-    lastSchedule = scheduleGeneration(courses)
-    saveToFile(lastSchedule)
+    lastSchedule, formatText = scheduleGeneration(courses)
+    saveToFile(lastSchedule, formatText)
 
 if __name__ == "__main__":
     main()

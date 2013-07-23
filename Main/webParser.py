@@ -163,12 +163,16 @@ class WebParser:
         res.names = map(lambda x: x.strip(), re.findall(r"[\w\d\s\-\/]+",
                         reserveText)[1:])
 
-        # we remove the "only" suffix (which is annoyingly pointless)
-        if "only" in res.names[-1]:
-            res.names[-1] = res.names[:-5]
-
         # in case we took the enrollment numbers after it, we remove
         # number-suffixes (e.g. "1A students1200")
+        while res.names[-1][-1].isdigit():
+            res.names[-1] = res.names[-1][:-1]
+
+        # we remove the "only" suffix (which is annoyingly pointless)
+        if "only" in res.names[-1]:
+            res.names[-1] = res.names[-1][:-5]
+
+        # stripping suffix-numbers again...
         while res.names[-1][-1].isdigit():
             res.names[-1] = res.names[-1][:-1]
 

@@ -138,12 +138,14 @@ class WebParser:
             # we don't want online classes!
             # processing a lecture row
             lec = Lecture()
-            self.processClass(lec, self.index, self.webData)
+            if self.processClass(lec, self.index, self.webData):
+                return
             self.thisCourse.lectures.append(lec)
         elif self.webData[self.index+1][:3].upper() == "TUT":
             # processing a tutorial row
             tut = Tutorial()
-            self.processClass(tut, self.index, self.webData)
+            if self.processClass(tut, self.index, self.webData):
+                return
             self.thisCourse.tutorials.append(tut)
         elif self.webData[self.index][:7].upper() == "RESERVE":
             # processing a reserve row
@@ -199,6 +201,10 @@ class WebParser:
 
         # parsing the "Times Days/Date" field
         match = re.search(r"([:\d]+)-([:\d]+)(\w+)", webData[index])
+        if not match:
+            # we return an error message in the "TBA" case
+            return "NoTimeError"
+        
         attr3 = ["startTime", "endTime", "days"]
         for i in xrange(len(attr3)):
             setattr(lec, attr3[i], match.group(i+1).strip())

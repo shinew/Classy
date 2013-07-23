@@ -132,7 +132,8 @@ class WebParser:
     def processSlot(self):
         """we check to see if this is the BEGINNING of a valid row"""
 
-        if self.webData[self.index+1][:3].upper() == "LEC" \
+        if (self.webData[self.index+1][:3].upper() == "LEC" \
+                or self.webData[self.index+1][:3].upper() == "LAB") \
                 and "ONLINE" not in self.webData[self.index+2]:
             # we don't want online classes!
             # processing a lecture row
@@ -150,7 +151,8 @@ class WebParser:
             # processing a reserve row
             res = Reserve()
             self.processReserve(res, self.index, self.webData)
-            self.thisCourse.lectures[-1].reserves.append(res)
+            if self.thisCourse.lectures:
+                self.thisCourse.lectures[-1].reserves.append(res)
         # note: we leave out the TST (exam?) times for now
 
     def processReserve(self, res, index, webData):

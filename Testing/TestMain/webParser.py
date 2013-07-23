@@ -151,34 +151,22 @@ class WebParser:
             # processing a reserve row
             res = Reserve()
             self.processReserve(res, self.index, self.webData)
-            if len(self.thisCourse.lectures) > 0:
+            if self.thisCourse.lectures:
                 self.thisCourse.lectures[-1].reserves.append(res)
         # note: we leave out the TST (exam?) times for now
 
     def processReserve(self, res, index, webData):
         """processing reservations for certain types of students"""
 
-        # warning: we merge the next 4 cells together,
-        # because the text is split between them
-        reserveText = webData[index]
+        reserveText = webData[index][9:]
 
         # we leave out the first match, because it is the word "reserve"
-        res.names = map(lambda x: x.strip(), re.findall(r"[\.\w\d\s\-\/]+",
-                        reserveText)[1:])
-
-        # in case we took the enrollment numbers after it, we remove
-        # number-suffixes (e.g. "1A students1200")
-#        import pdb; pdb.set_trace()
-        while res.names[-1][-1].isdigit():
-            res.names[-1] = res.names[-1][:-1]
+        res.names = map(lambda x: x.strip(), re.findall(
+                        r"[\:\'\.\w\d\s\-\/]+", reserveText))
 
         # we remove the "only" suffix (which is annoyingly pointless)
         if "only" in res.names[-1]:
             res.names[-1] = res.names[-1][:-5]
-
-        # stripping suffix-numbers again...
-        while res.names[-1][-1].isdigit():
-            res.names[-1] = res.names[-1][:-1]
 
         # now, we merge the match list
         while not webData[index].isdigit():

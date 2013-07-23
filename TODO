@@ -1,5 +1,3 @@
--1.	retab everything :|
-0.	Add course_name attribute to slots, then output that as well :(
 1.	Add an "Integrity Checker" for the outputs of the webParser, so it can be generalized to other universities as well (wouldn't that be sweet? :))
 2.	Add better checks:
 	a)	Does the course exist?

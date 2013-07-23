@@ -44,15 +44,19 @@ class Slot(object):
         self.numRatings = 0
         self.quality = 0.0
         self.easiness = 0.0
+        self.courseID = ""
 
     def __str__(self):
         attrs = ["classNumber", "compSec", "campusLocation", "startTime",
                  "endTime", "days", "building", "room", "instructor"]
-        return "\t".join(map(str, [getattr(self, x) for x in attrs]))
+        tmp = "\t".join(map(str, [getattr(self, x) for x in attrs]))
+        # to add course ID with fixed width because it varies so much
+        tmp = "{:9}{}".format(self.courseID, tmp)
+        return tmp
 
     def __repr__(self):
-        attrs = ["classNumber", "compSec", "campusLocation", "enrlCap",
-                 "enrlTotal", "waitCap", "waitTotal", "days",
+        attrs = ["courseID", "classNumber", "compSec", "campusLocation",
+                 "enrlCap", "enrlTotal", "waitCap", "waitTotal", "days",
                  "startTime", "endTime", "building", "room", "instructor",
                  "numRatings", "quality", "easiness"]
         return "*".join(map(str, [getattr(self, x) for x in attrs]))

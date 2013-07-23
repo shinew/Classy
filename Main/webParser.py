@@ -204,7 +204,7 @@ class WebParser:
         if not match:
             # we return an error message in the "TBA" case
             return "NoTimeError"
-        
+
         attr3 = ["startTime", "endTime", "days"]
         for i in xrange(len(attr3)):
             setattr(lec, attr3[i], match.group(i+1).strip())
@@ -234,6 +234,10 @@ class WebParser:
         Also, some reservation-postprocessing"""
 
         map(lambda x: x.calcMiscSeats(), course.lectures)
+        for lec in course.lectures:
+            lec.courseID = course.subject + " " + course.catalogNumber
+        for tut in course.tutorials:
+            tut.courseID = course.subject + " " + course.catalogNumber
 
         for slot in course.lectures + course.tutorials:
             # first, we convert time to 24hr time

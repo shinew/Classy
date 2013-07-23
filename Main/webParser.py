@@ -87,7 +87,6 @@ class WebParser:
         """submits a POST query, initializes HTMLParser"""
 
         try:
-            #import pdb; pdb.set_trace()
             params = urllib.urlencode({"sess": course.session,
                                        "subject": course.subject,
                                        "cournum": course.catalogNumber})

@@ -66,13 +66,12 @@ class Reserve:
     """A "reservation" made for certain types of students"""
 
     def __init__(self):
-        self.names = []  # e.g. "AFM", "Math CA", etc.
+        self.name = ""  # e.g. "AFM", "Math CA", etc.
         self.enrlCap = 0
         self.enrlTotal = 0
 
     def __repr__(self):
-        return "*".join(self.names) + "*" + str(self.enrlCap) + \
-               "*" + str(self.enrlTotal)
+        return "*".join(self.name, self.enrlCap, self.enrlTotal)
 
 
 class Lecture(Slot):
@@ -103,12 +102,11 @@ class Lecture(Slot):
             return
 
         for res in self.reserves:
-            for name in res.names:
-                if name in userTypes:
-                    # yay, this user fits!
-                    if res.enrlCap - res.enrlTotal > 0:
-                        self.thisUserCanAdd = True
-                        return
+            if res.name in userTypes:
+                # yay, this user fits!
+                if res.enrlCap - res.enrlTotal > 0:
+                    self.thisUserCanAdd = True
+                    return
 
 
 class Tutorial(Slot):

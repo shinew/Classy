@@ -158,15 +158,11 @@ class WebParser:
     def processReserve(self, res, index, webData):
         """processing reservations for certain types of students"""
 
-        reserveText = webData[index][9:]
-
-        # we leave out the first match, because it is the word "reserve"
-        res.names = map(lambda x: x.strip(), re.findall(
-                        r"[\:\'\.\w\d\s\-\/]+", reserveText))
+        res.name = webData[index][9:]
 
         # we remove the "only" suffix (which is annoyingly pointless)
-        if "only" in res.names[-1]:
-            res.names[-1] = res.names[-1][:-5]
+        if "only" in res.name:
+            res.name = res.name[:-5]
 
         # now, we merge the match list
         while not webData[index].isdigit():

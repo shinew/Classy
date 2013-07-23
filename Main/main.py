@@ -66,23 +66,22 @@ def queryUniversity(userCourses, courses, user, sessionString):
                     # this reservation has no spots left anyway,
                     # so don't ask
                     continue
-                for name in res.names:
-                    if name in askedNames:
-                        # don't want to re-ask
-                        continue
+                if res.name in askedNames:
+                    # don't want to re-ask
+                    continue
 
-                    askedNames.add(name)
+                askedNames.add(res.name)
 
-                    if firstTime:
-                        # first time: print question
-                        print "Which reservation categories apply to you?"
-                        firstTime = False
+                if firstTime:
+                    # first time: print question
+                    print "Which reservation categories apply to you?"
+                    firstTime = False
 
-                    inp = raw_input("Enter 'y' if you fufill the "
-                                    "reservation of \"{}\". If not, "
-                                    "enter 'n': ".format(name))
-                    if inp.lower() == 'y':
-                        user.userTypes.add(name)
+                inp = raw_input("Enter 'y' if you fufill the "
+                                "reservation of \"{}\". If not, "
+                                "enter 'n': ".format(res.name))
+                if inp.lower() == 'y':
+                    user.userTypes.add(res.name)
 
             lec.postProcess(user.userTypes)
 

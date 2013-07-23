@@ -1,7 +1,7 @@
 #!/bin/bash
 
 out_file=output.txt
-ids=`cat allIDs | sed -n '1, 100 p'`
+ids=`cat allIDs | sed -n '1001, 1646 p'`
 for id in $ids
 do
 #	echo $id

@@ -132,7 +132,8 @@ class WebParser:
     def processSlot(self):
         """we check to see if this is the BEGINNING of a valid row"""
 
-        if self.webData[self.index+1][:3].upper() == "LEC" \
+        if (self.webData[self.index+1][:3].upper() == "LEC" \
+                or self.webData[self.index+1][:3].upper() == "LAB") \
                 and "ONLINE" not in self.webData[self.index+2]:
             # we don't want online classes!
             # processing a lecture row
@@ -150,21 +151,34 @@ class WebParser:
             # processing a reserve row
             res = Reserve()
             self.processReserve(res, self.index, self.webData)
-            self.thisCourse.lectures[-1].reserves.append(res)
+            if len(self.thisCourse.lectures) > 0:
+                self.thisCourse.lectures[-1].reserves.append(res)
         # note: we leave out the TST (exam?) times for now
 
     def processReserve(self, res, index, webData):
         """processing reservations for certain types of students"""
 
-        reserveText = webData[index][9:]
+        # warning: we merge the next 4 cells together,
+        # because the text is split between them
+        reserveText = webData[index]
 
         # we leave out the first match, because it is the word "reserve"
-        res.names = map(lambda x: x.strip(), re.findall(
-                        r"[\:\'\.\w\d\s\-\/]+", reserveText))
+        res.names = map(lambda x: x.strip(), re.findall(r"[\.\w\d\s\-\/]+",
+                        reserveText)[1:])
+
+        # in case we took the enrollment numbers after it, we remove
+        # number-suffixes (e.g. "1A students1200")
+#        import pdb; pdb.set_trace()
+        while res.names[-1][-1].isdigit():
+            res.names[-1] = res.names[-1][:-1]
 
         # we remove the "only" suffix (which is annoyingly pointless)
         if "only" in res.names[-1]:
             res.names[-1] = res.names[-1][:-5]
+
+        # stripping suffix-numbers again...
+        while res.names[-1][-1].isdigit():
+            res.names[-1] = res.names[-1][:-1]
 
         # now, we merge the match list
         while not webData[index].isdigit():

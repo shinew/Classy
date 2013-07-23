@@ -28,8 +28,9 @@ def getUserInfo(userCourses):
     print "2.\tsorting by ratemyprofessor.com ratings.\n"
     print "Please follow prompts VERY CLOSELY!"
 
-    sessionString = raw_input("Which session you are in? (e.g. 'fall 2013' "
-                              "without quotes): ").strip().lower()
+    #sessionString = raw_input("Which session you are in? (e.g. 'fall 2013' "
+    #                          "without quotes): ").strip().lower()
+    sessionString = "fall 2013"  # we really don't need this atm
 
     print "\nPlease add courses in decreasing importance."
     print "Format: 'cs 145' (without quotes)"

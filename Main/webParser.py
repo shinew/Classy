@@ -132,7 +132,7 @@ class WebParser:
     def processSlot(self):
         """we check to see if this is the BEGINNING of a valid row"""
 
-        if (self.webData[self.index+1][:3].upper() == "LEC" \
+        if (self.webData[self.index+1][:3].upper() == "LEC"
                 or self.webData[self.index+1][:3].upper() == "LAB") \
                 and "ONLINE" not in self.webData[self.index+2]:
             # we don't want online classes!

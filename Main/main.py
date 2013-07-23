@@ -159,7 +159,7 @@ def saveToFile(schedule):
         print "\nOkay! The file is saved at {}. Have a nice " \
               "day.".format(outputFile+".txt")
 
-    raw_input("Enter anything to exit...: ")
+    raw_input("Enter anything to exit...")
 
 
 def main():

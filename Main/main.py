@@ -54,7 +54,7 @@ def queryUniversity(userCourses, courses, user, sessionString):
             courses.pop()
     print "Done!\n"
 
-    print "Which reservation categories apply to you?"
+    firstTime = True
 
     askedNames = set()
     for course in courses:
@@ -72,6 +72,12 @@ def queryUniversity(userCourses, courses, user, sessionString):
                         continue
 
                     askedNames.add(name)
+
+                    if firstTime:
+                        # first time: print question
+                        print "Which reservation categories apply to you?"
+                        firstTime = False
+
                     inp = raw_input("Enter 'y' if you fufill the "
                                     "reservation of \"{}\". If not, "
                                     "enter 'n': ".format(name))
@@ -155,7 +161,7 @@ def saveToFile(schedule):
         print "\nOkay! The file is saved at {}. Have a nice " \
               "day.".format(outputFile+".txt")
 
-    raw_input("Enter anything to exit: ")
+    raw_input("Enter anything to exit...: ")
 
 
 def main():

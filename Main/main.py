@@ -153,10 +153,9 @@ def saveToFile(schedule):
 
     else:
         outputFile = raw_input("\nPlease enter a file name: ")
-        f = open(outputFile+".txt", "w")
-        for slot in schedule:
-            f.write(str(slot) + "\n")
-        f.close()
+        with open(outputFile+".txt", "w") as f:
+            for slot in schedule:
+                f.write(str(slot) + "\n")
 
         print "\nOkay! The file is saved at {}. Have a nice " \
               "day.".format(outputFile+".txt")

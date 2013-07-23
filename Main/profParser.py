@@ -48,12 +48,11 @@ class RateMyProfParser:
         self.gotCache = True
         try:
             # file data stored in standard "key\nvalue\n" format
-            f = open(self.cacheFile, "r")
-            name = f.readline().strip()
-            while name:
-                self.cache[name] = eval(f.readline().strip())
+            with open(self.cacheFile, "r") as f:
                 name = f.readline().strip()
-            f.close()
+                while name:
+                    self.cache[name] = eval(f.readline().strip())
+                    name = f.readline().strip()
         except:
             return
 
@@ -80,10 +79,9 @@ class RateMyProfParser:
             ret = self.parseWebData()
             if ret:
                 # form of: (# ratings, overall quality, easiness)
-                f = open(self.cacheFile, "a")
-                f.write(self.name + "\n")
-                f.write(str(ret) + "\n")
-                f.close()
+                with open(self.cacheFile, "a") as f:
+                    f.write(self.name + "\n")
+                    f.write(str(ret) + "\n")
                 return ret
             else:
                 self.webData = []  # clear the data

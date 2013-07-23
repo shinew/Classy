@@ -119,7 +119,7 @@ def scheduleGeneration(courses):
     print "Format is: "
     attrs = ["Class#", "CompSec", "Place", "Start", "End", "Days",
              "Building Room", "Instructor"]
-    print "{:8}".format("Course"),
+    print "{:8}\t".format("Course"),
     print "\t".join(attrs)
 
     generator = Matcher(courses).matching()

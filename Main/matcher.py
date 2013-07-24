@@ -40,14 +40,12 @@ class Matcher:
     def matching(self):
         """recursively finds the slots
         stop when it returns None"""
-        return self.matchingTutorial(0)
+        return self.matchingLecture(0)
 
     def matchingTutorial(self, index):
-        """we want more variety in lectures, not tutorials,
-        so we process tutorials first"""
+        """we want to choose the best courses first, not tutorials"""
         if index == self.numCourses:
-            for y in self.matchingLecture(0):
-                yield y
+            yield self.getSlots()
         else:
             if len(self.courses[index].tutorials) == 0:
                 self.tutIndices[index] = -1
@@ -65,9 +63,10 @@ class Matcher:
                         self.tutIndices[index] = -1
 
     def matchingLecture(self, index):
-        """very similar to tutorials - base case is 'return slots'"""
+        """very similar to tutorials - different base case"""
         if index == self.numCourses:
-            yield self.getSlots()
+            for y in self.matchingTutorial(0):
+                yield y
         else:
             if len(self.courses[index].lectures) == 0 or \
                     not filter(lambda x: x.thisUserCanAdd,

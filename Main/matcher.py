@@ -45,28 +45,33 @@ class Matcher:
     def matchingTutorial(self, index):
         """we want to choose the best courses first, not tutorials"""
         if index == self.numCourses:
-            yield self.getSlots()
+            return self.getSlots()
         else:
             if len(self.courses[index].tutorials) == 0:
                 self.tutIndices[index] = -1
-                for y in self.matchingTutorial(index+1):
-                    yield y
+                return self.matchingTutorial(index+1)
+
             else:
                 for i, tut in enumerate(self.courses[index].tutorials):
                     times = self.notOccupied(tut)
                     if times:
+                        # this tutorial is a possible option
                         self.tutIndices[index] = i
                         map(self.timesOccupied.add, times)
-                        for y in self.matchingTutorial(index+1):
-                            yield y
+                        ret = self.matchingTutorial(index+1)
                         map(self.timesOccupied.remove, times)
                         self.tutIndices[index] = -1
+                        if ret:
+                            # this tutorial is workable
+                            # we don't return if it's not
+                            return ret
+                return None
 
     def matchingLecture(self, index):
         """very similar to tutorials - different base case"""
         if index == self.numCourses:
-            for y in self.matchingTutorial(0):
-                yield y
+            yield self.matchingTutorial(0)
+
         else:
             if len(self.courses[index].lectures) == 0 or \
                     not filter(lambda x: x.thisUserCanAdd,
@@ -99,7 +104,8 @@ class Matcher:
         for t in times:
             for j in self.timesOccupied:
                 # <= instead of < because we don't want adjacent classes
-                if j[0] <= t[0] <= j[1] or j[0] <= t[1] <= j[1]:
+                if j[0] <= t[0] <= j[1] or j[0] <= t[1] <= j[1] or \
+                        t[0] <= j[0] <= t[1] or t[0] <= j[1] <= t[1]:
                     return False
         return times
 

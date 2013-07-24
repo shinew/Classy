@@ -91,7 +91,7 @@ def queryRateMyProfessors(courses):
     print "Currently querying ratemyprofessors.com..."
 
     for i, course in enumerate(courses):
-        print "Process: Course {}/{}".format(str(i+1), len(courses))
+        print "Processing Course {}/{}...".format(str(i+1), len(courses))
 
         for j, slot in enumerate(course.lectures):
             #print "Lecture {}/{}".format(str(j+1), len(course.lectures))

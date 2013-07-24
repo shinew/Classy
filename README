@@ -3,7 +3,7 @@ This software will help UWaterloo students select and optimize course selections
 
 ===INSTALLATION===
 Windows:
-1.	Install the latest 2.x Python from http://python.org/download/
+1.	Install the latest 2.x Python from http://python.org/ftp/python/2.7.5/python-2.7.5.msi
 2.	Download (at least) the Main folder of this project (See the "Download ZIP" button to the right)
 3.	Run the main.py file from the Main folder. This can be done by:
 		a) Right-click the file, click "Edit with IDLE", then press F5, or

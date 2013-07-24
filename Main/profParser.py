@@ -66,8 +66,9 @@ class RateMyProfParser:
             # lecture/tutorial has no name
             return
 
-        # start at page 1
+        # for each school...
         for ID in self.schoolIDs:
+            # for the next 3 pages...
             pageNum = 1
             while pageNum <= 3:  # if there are 60 Wang's, for example, tough
                 # two possible errors (page out of range, or website down)

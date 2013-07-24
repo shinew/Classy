@@ -31,13 +31,11 @@ class RateMyProfParser:
     cacheFile = "teacherCache.txt"
     cache = {}
     gotCache = False
+    schoolIDs = ["1490", "1492"]  # waterloo and waterloo-laurier
 
-    def __init__(self, name, schoolID="1490"):  # professor's name
-        # 1490 = Waterloo
-        # TODO: look up some other schools' IDs?
+    def __init__(self, name):  # professor's name
 
         self.name = name.strip()
-        self.schoolID = schoolID
         self.webData = []
 
     def getCache(self):
@@ -57,8 +55,7 @@ class RateMyProfParser:
             return
 
     def getInfo(self):
-        """will return (avgRating, numRatings) if exists.
-        Else, return None"""
+        """Will return (avgRating, numRatings) if exists. Else, return None"""
 
         # get cache names (if they exist)
         self.getCache()
@@ -70,22 +67,23 @@ class RateMyProfParser:
             return
 
         # start at page 1
-        pageNum = 1
-        while pageNum <= 3:  # if there are 60 Wang's, for example, tough
-            # two possible errors (page out of range, or website down)
-            err = self.getWebData(pageNum)
-            if err:
-                return
-            ret = self.parseWebData()
-            if ret:
-                # form of: (# ratings, overall quality, easiness)
-                with open(self.cacheFile, "a") as f:
-                    f.write(self.name + "\n")
-                    f.write(str(ret) + "\n")
-                return ret
-            else:
-                self.webData = []  # clear the data
-                pageNum += 1
+        for ID in self.schoolIDs:
+            pageNum = 1
+            while pageNum <= 3:  # if there are 60 Wang's, for example, tough
+                # two possible errors (page out of range, or website down)
+                err = self.getWebData(pageNum)
+                if err:
+                    return
+                ret = self.parseWebData()
+                if ret:
+                    # form of: (# ratings, overall quality, easiness)
+                    with open(self.cacheFile, "a") as f:
+                        f.write(self.name + "\n")
+                        f.write(str(ret) + "\n")
+                    return ret
+                else:
+                    self.webData = []  # clear the data
+                    pageNum += 1
 
     def getWebData(self, pageNum):
         """fetching data from the webpage"""
@@ -111,5 +109,7 @@ class RateMyProfParser:
         for i, data in enumerate(self.webData):
             if firstName in data and lastName in data:
                 # we found it!
+                if int(self.webData[i+4]) == 0:  # this prof has no ratings
+                    return
                 return (int(self.webData[i+4]), float(self.webData[i+6]),
                         float(self.webData[i+8]))

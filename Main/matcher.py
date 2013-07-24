@@ -69,7 +69,10 @@ class Matcher:
         if index == self.numCourses:
             yield self.getSlots()
         else:
-            if len(self.courses[index].lectures) == 0:
+            if len(self.courses[index].lectures) == 0 or \
+                    not filter(lambda x: x.thisUserCanAdd,
+                            self.courses[index].lectures):
+                    # either no lectures, or all lectures are full
                 self.lecIndices[index] = -1
                 for y in self.matchingLecture(index+1):
                     yield y

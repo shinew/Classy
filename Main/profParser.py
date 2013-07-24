@@ -72,12 +72,13 @@ class RateMyProfParser:
             pageNum = 1
             while pageNum <= 3:  # if there are 60 Wang's, for example, tough
                 # two possible errors (page out of range, or website down)
-                err = self.getWebData(pageNum)
+                err = self.getWebData(pageNum, ID)
                 if err:
                     break
                 ret = self.parseWebData()
                 if ret:
                     # form of: (# ratings, overall quality, easiness)
+                    # caching it
                     with open(self.cacheFile, "a") as f:
                         f.write(self.name + "\n")
                         f.write(str(ret) + "\n")
@@ -86,11 +87,11 @@ class RateMyProfParser:
                     self.webData = []  # clear the data
                     pageNum += 1
 
-    def getWebData(self, pageNum):
+    def getWebData(self, pageNum, ID):
         """fetching data from the webpage"""
         try:
             URL = self.requestURL.format(self.name.split()[1],
-                                         self.schoolID, str(pageNum))
+                                         ID, str(pageNum))
             page = urllib.urlopen(URL)
             parser = CustomHTMLParser(self.webData)
             parser.feed(page.read().replace("&nbsp", " "))

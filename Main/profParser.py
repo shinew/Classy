@@ -73,7 +73,7 @@ class RateMyProfParser:
                 # two possible errors (page out of range, or website down)
                 err = self.getWebData(pageNum)
                 if err:
-                    return
+                    break
                 ret = self.parseWebData()
                 if ret:
                     # form of: (# ratings, overall quality, easiness)
